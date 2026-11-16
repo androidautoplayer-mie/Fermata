@@ -1,4 +1,4 @@
-name: Build APK
+name: Build URGENT24JAM APK
 
 on:
   push:
@@ -35,9 +35,9 @@ jobs:
 
       - name: Export vars
         env:
-          APP_NAME: ${{ vars.APP_NAME }}
-          APP_ID_SFX: ${{ vars.APP_ID_SFX }}
-          ARTIFACT_SFX: ${{ vars.ARTIFACT_SFX }}
+          APP_NAME: URGENT24JAM
+          APP_ID_SFX: .urgent24jam
+          ARTIFACT_SFX: -urgent24jam
         run: |
           export_vars() {
             for name in "$@"; do
