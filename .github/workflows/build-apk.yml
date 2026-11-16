@@ -1,4 +1,4 @@
-name: Build URGENT24JAM APK
+name: Build AUTO'TQSM APK
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
 
       - name: Export vars
         env:
-          APP_NAME: URGENT24JAM
+          APP_NAME: AUTO'TQSM
           APP_ID_SFX: .urgent24jam
           ARTIFACT_SFX: -urgent24jam
         run: |
