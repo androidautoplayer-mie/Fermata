@@ -120,6 +120,16 @@ jobs:
           ./gradlew fermata:packageAutoReleaseUniversalApk -PABI=armeabi-v7a "${ARGS[@]}"
           mv $out/*.apk dist/arm/
 
+      - name: Verify APK signature and package metadata
+        run: |
+          apk=$(find dist/arm64 -maxdepth 1 -name '*.apk' -print -quit)
+          test -n "$apk"
+          apksigner_path=$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)
+          test -x "$apksigner_path"
+          "$apksigner_path" verify --verbose --print-certs "$apk"
+          aapt_path=$(dirname "$apksigner_path")/aapt
+          "$aapt_path" dump badging "$apk" | head -n 8
+
       - name: Upload arm64 APK
         uses: actions/upload-artifact@v4
         with:
