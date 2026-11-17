@@ -36,7 +36,7 @@ Purpose: a single Android Auto-oriented APK with exactly one YouTube component a
 
 - Repository: https://github.com/androidautoplayer-mie/Fermata
 - Branch: `urgent24jam`
-- Current HEAD: `2b0de5f4931579c7f3864f147769b5c85292c0fb`
+- Current HEAD: `d96090f31e7adee7572ff02c31473f93f44d5bb9` (documentation-only audit commit; no APK built from this HEAD).
 - Previous successful baseline before recent registry cleanup: `4c6a0d5874687170d223ec5283e47773a52d154b`
 - Commit `e3632ad41712e9590fdb7443fa0812b0fa9f00e9` removed the old base addon registry block but caused a build failure because Gradle expected the `ext.addons` property.
 - Commit `2b0de5f4931579c7f3864f147769b5c85292c0fb` corrected that by explicitly setting `addons = []`. This is the current successful build commit.
@@ -106,6 +106,15 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - Important diagnostic gap: source presence and Gradle task selection do not prove that the installed APK's merged manifest contains all expected service declarations, that Google Play Services/Android Auto recognizes the projection services, or that the correct launcher entry is selected. Need inspect APK merged manifest / package metadata and compare the installed AUTO•TQSM APK to official Fermata Auto APK. Do not assume missing Mirror classes or change source manifests without evidence.
 - Current head-unit photo shows the Fermata Media Service browser root (Folders/Favorites/Playlists, no items). This is distinct from launching the projection-based Mirror service. Need identify whether user opened media app entry or attempted Mirror projection service entry.
 - No source code changed and no APK built during this audit. Keep video/mirroring use parked and do not provide instructions to bypass Android Auto driving-safety restrictions.
+
+## 6D. APK artifact and CI metadata audit (2026-11-17)
+
+- Reconfirmed branch HEAD: `d96090f31e7adee7572ff02c31473f93f44d5bb9`; parent `928ca3ac7df99d1b974eaf1371546f946abb1c4b`. This HEAD is documentation-only and is not the commit used by the latest successful APK build.
+- Retrieved the arm64 artifact from workflow run `44040206462` (artifact ID `14309775099`; ZIP SHA-256 `155fb5e8f4d94989de34e8f46306e1eb1c1cf8ad8ccdd71a18e6fcaf23e42693`). Artifact is still retained by GitHub. The arm32 artifact is also retained (ID `14308529477`).
+- CI job log confirms the APK package metadata: package `me.aap.fermata.auto.urgent24jam`, versionCode `268`, versionName `2.0.2-2b0de5f`, minSdk `28`, targetSdk `36`, compileSdk `36`. It also logs car-app permissions including `androidx.car.app.ACCESS_SURFACE` and `androidx.car.app.NAVIGATION_TEMPLATES`.
+- The available CI verification log does not print the merged APK component declarations (services, activities, intent filters, labels). Therefore it does not establish whether `CarService`, `MirrorService`, `MirrorServiceFS`, and the media service are all present in the built APK with the expected declarations.
+- The artifact ZIP was retrieved for direct inspection, but the current analysis runtime could not open the downloaded file. Treat merged-manifest inspection as still outstanding; do not infer it from source manifests or the partial CI metadata output.
+- No source code was changed and no new APK was built during this audit. Latest successful APK remains from commit `2b0de5f4931579c7f3864f147769b5c85292c0fb`, not current HEAD.
 
 ## 7. Work remaining (priority order)
 
