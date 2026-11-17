@@ -69,6 +69,15 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - Do not state "Android Auto ready" until the actual category, services, exported components, feature delivery, app visibility, and head-unit behavior have been verified.
 - The user's exact Android Auto/head-unit version and phone OS should be recorded when hardware testing becomes possible; do not guess them.
 
+## 6A. First real Android Auto head-unit test (user-provided photos, 2026-11-17)
+
+- The AUTO•TQSM launcher icon is visible in the Android Auto launcher on the user's OPPO A3 5G / Android 16.
+- Opening the entry reaches a Fermata media-service style screen showing Folders, Favorites and Playlists, with "No items".
+- This is evidence that Android Auto can discover the app/media entry and open the media browser surface. It is NOT evidence that the YouTube and Browser add-ons are exposed as Android Auto browse entries.
+- Source inspection explains the empty root structure: `DefaultMediaLib.getChildren(Root)` returns last-played item (if any), Folders, Favorites, Playlists, and only addons implementing `MediaLibAddon`. The current `YoutubeAddon` extends `WebBrowserAddon` and does not implement `MediaLibAddon`; `WebBrowserAddon` is a phone-side fragment addon and also does not implement `MediaLibAddon`. Thus neither appears in the media-service browse root by design. The empty Folders/Favorites/Playlists are consistent with no media items/favorites/playlists configured; not proof of Android 16 incompatibility.
+- Current test status: Android Auto launcher discovery = observed working; media-service root opens = observed working; YouTube/Browser usable from the Android Auto screen = NOT verified / not achieved in this test.
+- Do not "fix" this by simply adding arbitrary media items or claiming Android 16 incompatibility. The architecture needs a deliberate, platform-compliant Android Auto entry/interaction path. Investigate Android Auto media-app capabilities and existing Fermata/AA Browser integration before code changes. Preserve safety restrictions; do not attempt to surface video/browser screens through unsupported hacks.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
