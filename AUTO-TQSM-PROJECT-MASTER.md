@@ -178,6 +178,18 @@ Further source audit findings:
 - Strong next diagnostic: inspect the merged manifest of the exact installed AUTO•TQSM APK and compare service declarations, feature flags, labels and package metadata against the user's known-working Fermata Auto APK. The previously downloaded CI artifact could not be opened by the current runtime; do not claim this comparison has been completed.
 - No source code was changed and no APK was built during this audit. The likely issue is narrowed to Android Auto discovery/registration of the projection service versus the separately discoverable media service; exact cause remains unconfirmed.
 
+## 6J. Android Auto projection validation audit (2026-11-17)
+
+- Re-fetched the current branch source and confirmed `fermata/src/main/res/xml/automotive_app_desc.xml` contains only `<uses name="media" />`. The auto flavor manifest separately declares `CarService` and `MirrorService` with `CATEGORY_PROJECTION` and `CATEGORY_PROJECTION_OEM`; declaration of those services alone does not guarantee Android Auto will expose them.
+- Inspected upstream Fermata issue #846 (opened 2026-10-15, Android Auto 17.7 analysis). Its author reports that Android Auto validates app components by capability type: the media browser is checked as MEDIA, while `CarService` and `MirrorService` are checked as PROJECTION. The report says the "Unknown sources" toggle does not admit PROJECTION apps, even though it can admit MEDIA apps. It also describes an installer/Play-validation gate for sideloaded projection apps and provides a matching log pattern: `CAR.VALIDATOR` / `Package DENIED; failed all other checks`. Source: https://github.com/AndreyPavlenko/Fermata/issues/846
+- This is a strong explanation for the user's symptom (Media Service visible, projection entries absent), but it is not yet proven on the user's exact OPPO A3 5G / Android Auto version because no `CAR.VALIDATOR` log or AA version has been captured.
+- There are potentially two separate projection checks to resolve before expecting `CarService`/`MirrorService` to appear: (1) the app descriptor in this branch currently declares MEDIA only, not PROJECTION; (2) Android Auto 17.7's reported installer/Play validation may reject sideloaded PROJECTION components even when the descriptor and services are correct. Do not assume fixing only one will make projection appear.
+- The `android.hardware.type.automotive required=true` declaration is not identified as the cause by the issue #846 validation analysis. Do not change it as a speculative fix. It is still worth checking against the intended phone/AAOS distribution model separately.
+- The same upstream issue says a full Browser/video UI is not an Android Auto media-browser feature. Keep Android Auto interaction within supported audio/media surfaces; do not bypass projection validation, installer checks, or driving-safety restrictions.
+- Engineering direction: keep the media service as an internal Android Auto-compatible path, but do not make its empty browse root the user's intended YouTube UI. Investigate a compliant audio-only YouTube `MediaLibAddon`/browse implementation and verify that the descriptor declares only capabilities the app actually implements. Treat Mirror as optional and subject to the same projection validation gate.
+- No code or manifest was changed and no APK was built in this audit. No installer workaround is approved or required by this project; preserve the user's no-Shizuku/no-Developer-Options requirement and RM0 target.
+
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
