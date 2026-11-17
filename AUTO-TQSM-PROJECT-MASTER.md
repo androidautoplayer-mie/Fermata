@@ -145,6 +145,17 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - Proposed implementation direction (not yet coded): first verify that a valid YouTube audio item/source can be restored and started through the supported media session path after a car connection; gate it behind an explicit user preference and avoid automatic video playback. Bluetooth ACL can include unrelated devices, so do not assume every Bluetooth connection means the car/Android Auto is connected. Prefer a confirmed car/media connection signal where available, with safe fallback and user control.
 - No source code changed and no APK built in this audit.
 
+## 6H. User clarification: actual Fermata usage and AUTO•TQSM priority (2026-11-17)
+
+User clarified their real-world Fermata usage:
+- They use **Fermata Auto** and **Fermata Mirror** only.
+- They hide the **Fermata Media** entry from the Android Auto launcher and do not use it as a user-facing feature.
+- AUTO•TQSM's primary target is the **YouTube functionality from Fermata Auto**.
+- User would like Fermata Mirror integrated into the same app as Fermata Auto if feasible, but Mirror is optional/lower priority and not a blocker for the YouTube-first app.
+- Do not make Fermata Media a visible/user-facing destination or treat it as the user's primary workflow. Distinguish its hidden/internal media service implementation from a launcher entry: an internal service may still support Android media-session or Android Auto integration even when the user hides/does not open its launcher entry.
+- This clarification supersedes the earlier strict exclusion of Mirror: Mirror is now an optional integration candidate, subject to feasibility and separate safety/compatibility assessment. First deliver the YouTube-first Fermata Auto experience.
+- No source code changed and no APK built as part of recording this clarification.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
