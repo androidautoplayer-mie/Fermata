@@ -50,3 +50,14 @@ Project: AUTO•TQSM only
 - Confirmed the media-list click handler in `MediaLibFragment.ListAdapter.onClick()`: non-stream playable items route to `onClick(PlayableItem)`, which calls `a.getBody().playItem(i)`; for video items it returns immediately after refreshing list state. This still does NOT explain the reported playlist insertion, because the exact YouTube search/result surface and event source have not been identified.
 - No application source, manifest, logo, or branch configuration was changed. No APK was built and no runtime test was performed in this follow-up.
 - Next evidence-led step: trace the actual YouTube result view and its click/long-click listeners, then correlate with a device log for the reported playlist action; separately obtain the Settings crash stack trace before any fix.
+
+
+## YouTube event-path and CI verification follow-up (2026-11-18)
+
+- Inspected `YoutubeFragment`, `YoutubeWebView.attachListeners()`, `YoutubeJsInterface.handleEvent()`, `YoutubeMediaEngine`, `YoutubeWebClient`, and `WebBrowserFragment.loadUrl()` on `urgent24jam`.
+- The YouTube WebView JavaScript bridge currently handles video found/playing/paused/ended, progress, video quality results, and fullscreen events. The listener attaches HTML video element lifecycle handlers; it does not register a click handler for YouTube search-result cards or a playlist-add action.
+- `YoutubeMediaEngine.play()` calls the WebView's JavaScript video play method. Its current item is an internal `ExtPlayable` whose `isVideo()` returns true. This remains a video-oriented page playback engine, not an audio-only YouTube media catalog.
+- `YoutubeWebClient.shouldOverrideUrlLoading()` routes non-YouTube links to the Browser fragment; `WebBrowserFragment.loadUrl()` routes YouTube URLs back to the YouTube fragment. These navigation routes do not explain a result tap being added to a playlist.
+- Source audit still cannot identify the reported playlist-add action. It may occur inside YouTube's own web UI or an Android Auto/media surface, but that is not established. Do not change click behavior without an exact reproduction surface or runtime trace.
+- GitHub Actions run `44133520539` for documentation commit `e7fbd9d21ba8e44605b4f9c9560d783a13b57cf7` completed successfully. Job `Build Fermata Auto APKs` succeeded, including APK signature/package verification and uploads. Artifacts: arm64 `14350633148`, arm `14352345077`; both unexpired at time of check. This verifies the current branch source compiles/packages for the AUTO flavor, but the commit contains documentation changes only and does not verify runtime fixes.
+- No application source, manifest, logo, or build configuration was changed. No device runtime test was performed.
