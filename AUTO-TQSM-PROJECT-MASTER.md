@@ -78,6 +78,19 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - Current test status: Android Auto launcher discovery = observed working; media-service root opens = observed working; YouTube/Browser usable from the Android Auto screen = NOT verified / not achieved in this test.
 - Do not "fix" this by simply adding arbitrary media items or claiming Android 16 incompatibility. The architecture needs a deliberate, platform-compliant Android Auto entry/interaction path. Investigate Android Auto media-app capabilities and existing Fermata/AA Browser integration before code changes. Preserve safety restrictions; do not attempt to surface video/browser screens through unsupported hacks.
 
+## 6B. Platform and AA Browser compatibility audit (2026-11-17)
+
+- Official Android for Cars documentation distinguishes Android Auto from Android Automotive OS (AAOS). The supported category list says Android Auto supports audio media, while browser apps are listed for AAOS only; video apps are also AAOS-only. Reference: https://developer.android.com/training/cars
+- Official media-app documentation says Android Auto media apps expose an audio-oriented content tree through MediaBrowserService/MediaLibraryService and MediaSession. This is not a general-purpose launcher for arbitrary phone activities or web browser UI. References:
+  - https://developer.android.com/training/cars/media/create-media-browser
+  - https://developer.android.com/training/cars/media/create-media-browser/content-hierarchy
+- AA Browser current source (androidautohacks/AABrowser main, inspected 2026-11-17) is a standalone browser Activity/WebView app, not a MediaBrowserService addon. Its manifest registers MainActivity as MAIN/LAUNCHER, CAR_LAUNCHER, NAVIGATION and APP_MAPS and accepts http/https VIEW intents. The manifest also sets distractionOptimized=true. Do not copy these declarations into AUTO•TQSM as if they were official Android Auto browser support.
+- AA Browser current app Gradle config sets minSdk 35, targetSdk 37, Java/Kotlin JVM target 21. This excludes Android 12 devices at the declared minimum and cannot simply be transplanted into this app's minSdk 28 build without a deliberate compatibility port.
+- AA Browser README says Android 15 or later and its installation instructions require Android Auto Developer Settings / Unknown sources. This conflicts with the user's no-Developer-Options requirement. Do not integrate a workaround that requires that setting or bypasses platform restrictions.
+- AA Browser is GPL-3.0. Any future reuse/adaptation requires license compliance, attribution, marking modified files, and corresponding-source obligations before distribution. Do not copy code until the scope and compliance plan are explicit.
+- Therefore no safe, official Android Auto route has yet been identified for exposing a full Browser screen or YouTube video UI through the current media service. Do not promise these capabilities on Android Auto. A compliant audio-only YouTube/media route may be technically different from showing video; investigate only within platform-supported behavior and safe parked-use constraints.
+- No source code was changed during this audit. No APK was built. The user-facing head-unit test still shows the app entry but an empty Fermata media root.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
