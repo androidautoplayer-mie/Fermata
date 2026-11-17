@@ -38,3 +38,15 @@ Project: AUTO•TQSM only
 - Do not expose video/browser UI while driving or bypass Android Auto safety restrictions.
 - Do not claim a feature works based only on source inspection or app visibility.
 - Preserve narrow, reversible changes and record each material code change with its commit and CI result.
+
+
+## Follow-up source-path verification (2026-11-18)
+
+- Retrieved the exact recursive Git tree for branch `urgent24jam` from HEAD `17ca40c88c8bf3e2b06ef73552a42158f98c158d`; this resolved the previously uncertain source paths.
+- Confirmed the actual settings implementation is `fermata/src/main/java/me/aap/fermata/ui/fragment/SettingsFragment.java`, and the add-on preference builder is an inner class in that same file (not a separate `AddonPrefsBuilder.java`).
+- `SettingsFragment.onViewCreated()` asynchronously obtains the activity delegate, builds the adapter, registers listeners, and attaches the RecyclerView adapter. `cleanUp()` removes listeners and destroys the adapter.
+- `addAddons()` creates one preference subsection per configured add-on with settings. `AddonPrefsBuilder.configure()` adds the enable toggle and calls the loaded add-on's `contributeSettings()` only when `AddonManager.getAddon(className)` is non-null. `onAddonChanged()` reconfigures the subsection.
+- These paths identify the settings lifecycle and dynamic add-on reconfiguration points, but they do NOT identify the cause of the user's Settings crash. No exception stack trace, crash log, or reproducible test is available; do not patch speculatively.
+- Confirmed the media-list click handler in `MediaLibFragment.ListAdapter.onClick()`: non-stream playable items route to `onClick(PlayableItem)`, which calls `a.getBody().playItem(i)`; for video items it returns immediately after refreshing list state. This still does NOT explain the reported playlist insertion, because the exact YouTube search/result surface and event source have not been identified.
+- No application source, manifest, logo, or branch configuration was changed. No APK was built and no runtime test was performed in this follow-up.
+- Next evidence-led step: trace the actual YouTube result view and its click/long-click listeners, then correlate with a device log for the reported playlist action; separately obtain the Settings crash stack trace before any fix.
