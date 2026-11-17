@@ -91,6 +91,22 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - Therefore no safe, official Android Auto route has yet been identified for exposing a full Browser screen or YouTube video UI through the current media service. Do not promise these capabilities on Android Auto. A compliant audio-only YouTube/media route may be technically different from showing video; investigate only within platform-supported behavior and safe parked-use constraints.
 - No source code was changed during this audit. No APK was built. The user-facing head-unit test still shows the app entry but an empty Fermata media root.
 
+## 6C. Fermata Mirror and AUTO flavor audit (2026-11-17)
+
+- Confirmed the AUTO flavor build workflow runs `fermata:packageAutoReleaseUniversalApk`, so it targets the `autoRelease` variant, not the mobile flavor.
+- Confirmed `fermata/src/auto/AndroidManifest.xml` declares:
+  - `CarService` with CATEGORY_PROJECTION and CATEGORY_PROJECTION_OEM.
+  - `MirrorService` with CATEGORY_PROJECTION and CATEGORY_PROJECTION_OEM, label `mirror_service_name`.
+  - `MirrorServiceFS` as an AndroidX CarAppService with NAVIGATION category.
+  - `ProjectionService` foreground service for MediaProjection.
+  - `ProjectionActivity`, `LauncherActivity`, accessibility dispatcher, and Xposed dispatcher.
+- Confirmed implementation classes `MirrorActivity`, `MirrorDisplay`, `MirrorService`, and `ProjectionService` are present in `fermata/src/auto`. Thus the source repository contains Fermata Mirror's Android Auto-specific implementation.
+- The auto manifest requests Android Auto surface/navigation permissions, media projection foreground service, overlay, accessibility/Xposed-related services and other permissions. Mirror uses MediaProjection and its own CarActivity/Surface integration; it is not the same as the YouTube/Browser web addons.
+- Build workflow sets `APP_NAME=AUTO•TQSM`, suffix `.urgent24jam`, and runs the AUTO release universal APK task for arm64 and arm32. Therefore source intent is to build the auto flavor.
+- Important diagnostic gap: source presence and Gradle task selection do not prove that the installed APK's merged manifest contains all expected service declarations, that Google Play Services/Android Auto recognizes the projection services, or that the correct launcher entry is selected. Need inspect APK merged manifest / package metadata and compare the installed AUTO•TQSM APK to official Fermata Auto APK. Do not assume missing Mirror classes or change source manifests without evidence.
+- Current head-unit photo shows the Fermata Media Service browser root (Folders/Favorites/Playlists, no items). This is distinct from launching the projection-based Mirror service. Need identify whether user opened media app entry or attempted Mirror projection service entry.
+- No source code changed and no APK built during this audit. Keep video/mirroring use parked and do not provide instructions to bypass Android Auto driving-safety restrictions.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
