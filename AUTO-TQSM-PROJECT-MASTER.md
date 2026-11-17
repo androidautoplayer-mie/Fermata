@@ -233,3 +233,12 @@ Further source audit findings:
 - 2026-11-17: Current branch source confirmed to select only `:web` and register exactly one YouTube addon plus one Web Browser addon.
 - 2026-11-17: Base addon registry corrected to `addons = []` in commit `2b0de5f4931579c7f3864f147769b5c85292c0fb`.
 - 2026-11-17: GitHub Actions run `44040206462` completed successfully and uploaded arm64 and arm32 APK artifacts. No head-unit runtime test is recorded.
+
+
+## 6L. Clarification: app identity and integrated components (2026-11-18)
+
+- User explicitly clarified that **AUTO•TQSM is the user's own app**. Fermata is a source of reusable components/framework code integrated into AUTO•TQSM; the user is not merely renaming the separate Fermata Auto app, nor launching a separate Fermata app to obtain YouTube.
+- The phone-side YouTube functionality being discussed is the YouTube feature inside the AUTO•TQSM app/package. In source terms, it is implemented using integrated Fermata-derived components; that implementation origin must not be confused with a separate user-facing Fermata app.
+- The user's head-unit photos show the AUTO•TQSM Media Service entry enabled in Android Auto's Customize Launcher and opening a media browser surface with Folders/Favorites/Playlists but no items. This is distinct from the phone-side AUTO•TQSM YouTube feature.
+- Future analysis and reports must use these terms precisely: AUTO•TQSM = the app; Fermata = integrated component/framework source; YouTube = AUTO•TQSM's phone-side feature; Media Service = the separate Android media-browser integration surface exposed by the same app package.
+- No source code, manifest, logo, or branch configuration was changed for this clarification. No APK was built or runtime-tested as part of this documentation update.
