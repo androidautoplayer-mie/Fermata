@@ -134,6 +134,17 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - Safety boundary: do not add video/browser UI or bypass Android Auto restrictions. Android Auto work should remain within supported audio/media browsing behavior; video/browser/projection functionality must not be enabled for use while driving.
 - No source code changed and no APK built in this audit.
 
+## 6G. Bluetooth auto-start versus YouTube auto-play audit (2026-11-17)
+
+- `fermata/src/auto/AndroidManifest.xml` declares a `MediaServiceStarter` receiver for `android.bluetooth.device.action.ACL_CONNECTED`.
+- `MediaServiceStarter.onReceive()` responds to Bluetooth ACL connection by calling `FermataMediaServiceConnection.connect(null)`; on success it logs that the media service started. It does not issue a Play command or select a YouTube item.
+- `FermataMediaServiceConnection.connect()` binds/starts the media service with `ACTION_MEDIA_SERVICE`; the inspected method does not initiate playback.
+- `CarService.onDestroy()` pauses active playback and disconnects its service connection. This is lifecycle handling, not an auto-play trigger.
+- `YoutubeMediaEngine.playing(url)` handles an already-started YouTube playback event and updates engine/session state; it is not itself the Bluetooth auto-start trigger.
+- Conclusion: existing code already has Bluetooth-triggered media-service startup, but source inspection does not show Bluetooth-triggered YouTube auto-play. This distinction is important: starting the service is not the same as starting a selected YouTube audio item.
+- Proposed implementation direction (not yet coded): first verify that a valid YouTube audio item/source can be restored and started through the supported media session path after a car connection; gate it behind an explicit user preference and avoid automatic video playback. Bluetooth ACL can include unrelated devices, so do not assume every Bluetooth connection means the car/Android Auto is connected. Prefer a confirmed car/media connection signal where available, with safe fallback and user control.
+- No source code changed and no APK built in this audit.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
