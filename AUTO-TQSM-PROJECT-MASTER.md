@@ -125,6 +125,15 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - YouTube playback path: `YoutubeMediaEngine.start()` calls `YoutubeWebView.play()`, which executes JavaScript to call the current HTML video element's `play()`. `YoutubeMediaEngine.playing(url)` updates the media engine callback when a video-playing event arrives. The inspected `YoutubeWebClient` only routes non-YouTube URLs to the Browser fragment. These snippets do not establish why the user's tap added an item to a playlist; no click-event stack trace or runtime log is available.
 - No code changes, manifest changes, or new APK build were made in this source audit. Next investigation should inspect the actual APK merged manifest and the UI click/listener path associated with the reported playlist action before proposing a fix.
 
+## 6F. Playback click-path audit (2026-11-17)
+
+- `MediaLibFragment.ListAdapter.onClick()` handles a clicked `MediaItemView`. If the item is a `PlayableItem`, it dispatches to the local `onClick(PlayableItem)`; that method calls `MainActivity.getBody().playItem(i)` unless the same item is already current.
+- `MediaSessionCallback.playItem(i, pos)` prepares the item and then `playPreparedItem()` chooses an engine via `EngineManager.createEngine()`, calls `eng.prepare(i)`, and updates the media session queue when the item's parent differs from the previous item's parent. This is the generic media-list click-to-play path.
+- `YoutubeFragment` registers a media-service broadcast listener and responds to playable changes, but the inspected fragment source does not show a click handler that would directly explain the user's report that tapping a YouTube result adds it to a playlist.
+- Therefore the generic media playback path is present, but there is not enough source evidence to attribute the user's YouTube playlist behavior to it. Need identify the exact UI surface/result type and inspect its click handler; runtime logs would be required to establish the actual event path.
+- Safety boundary: do not add video/browser UI or bypass Android Auto restrictions. Android Auto work should remain within supported audio/media browsing behavior; video/browser/projection functionality must not be enabled for use while driving.
+- No source code changed and no APK built in this audit.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
