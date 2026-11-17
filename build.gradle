@@ -16,7 +16,8 @@ ext {
     ANDROIDX_SWIPEREFRESHLAYOUT_VERSION = libs.versions.androidxSwiperefreshlayout.get()
     GUAVA_VERSION = libs.versions.guava.get()
 
-    // AUTO•TQSM includes only the YouTube and Web Browser add-ons.
+    // Base add-on registry is empty; the selected :web module contributes YouTube and Web Browser only.
+    addons = []
 }
 
 buildscript {
