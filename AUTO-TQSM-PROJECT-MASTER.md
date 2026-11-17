@@ -242,3 +242,36 @@ Further source audit findings:
 - The user's head-unit photos show the AUTO•TQSM Media Service entry enabled in Android Auto's Customize Launcher and opening a media browser surface with Folders/Favorites/Playlists but no items. This is distinct from the phone-side AUTO•TQSM YouTube feature.
 - Future analysis and reports must use these terms precisely: AUTO•TQSM = the app; Fermata = integrated component/framework source; YouTube = AUTO•TQSM's phone-side feature; Media Service = the separate Android media-browser integration surface exposed by the same app package.
 - No source code, manifest, logo, or branch configuration was changed for this clarification. No APK was built or runtime-tested as part of this documentation update.
+
+
+## Fermata Auto architecture study — source findings (2026-11-18)
+
+Scope: read-only study of the Fermata-derived code currently present on branch `urgent24jam`. These are source facts, not a claim that the user's separate phone/player runtime was tested.
+
+### A. Android Auto app/service entry points
+- `fermata/src/auto/AndroidManifest.xml` declares the Auto-specific projection and mirror services, LauncherActivity, projection service, accessibility/Xposed dispatch services, and Bluetooth ACL-connected receiver `MediaServiceStarter`.
+- `FermataMediaService` is implemented as an AndroidX `MediaBrowserServiceCompat`. In `onCreate()` it creates `DefaultMediaLib`, a `MediaSessionCompat`, `MediaSessionCallback`, calls `setSessionToken()`, and installs the session callback.
+- `onGetRoot()` returns the library root ID and advertises media search and list-style browsable/playable content hints. The service's browse data therefore comes from `DefaultMediaLib`, not from the phone launcher registration alone.
+
+### B. Media browse tree
+- `DefaultMediaLib.getChildren(root)` builds root children from last-played item (if any), Folders, Favorites, Playlists, and then roots supplied by loaded add-ons implementing `MediaLibAddon`.
+- Child browse requests resolve a media ID to a `BrowsableItem` and convert its children to MediaBrowser items. Non-browsable IDs return an empty list.
+- `MediaLibAddon` defines three key integration methods: `isSupportedItem(Item)`, `getRootItem(DefaultMediaLib)`, and `getItem(DefaultMediaLib, scheme, id)`. This is the extension contract for adding a navigable item tree to the Media Service.
+- `AddonManager.getAddons(MediaLibAddon.class)` filters only the loaded add-ons that implement that interface. It loads configured add-ons from `BuildConfig.ADDONS`, with Auto-specific filtering controlled by `BuildConfig.AUTO`.
+
+### C. YouTube phone feature vs media-session playback
+- `YoutubeFragment` is the phone-side YouTube page: it creates and initializes `YoutubeWebView`, `YoutubeWebClient`, and `YoutubeChromeClient`, loads the mobile YouTube URL, restores saved state, and registers a listener with the media-service UI binder.
+- `YoutubeMediaEngine` connects the page's video lifecycle to the shared `MediaSessionCallback`: video-playing events set the engine/source, engine start calls `web.play()`, pause calls `web.pause()`, and current metadata/duration/position are read from the WebView.
+- The engine's `YoutubeItem` is explicitly `isVideo() == true`. The engine uses an internal `ExtRoot("youtube", lib)` and temporary current/next/previous/end items for playback/session control.
+- `YoutubeAddon` extends `WebBrowserAddon`; its source declaration does not implement `MediaLibAddon`. `WebBrowserAddon` is a fragment/settings addon, not a media-library browse provider.
+- Consequence: the existing YouTube page can participate in the shared playback session when a video is playing, but the existing YouTube addon does not contribute a YouTube browse root to `DefaultMediaLib`. This distinction explains why a phone-side YouTube feature and an enabled Media Service launcher entry can coexist with an empty browse tree. It is a strong code-level explanation consistent with the supplied photos, not proof of all possible runtime causes.
+
+### D. Important boundaries
+- Media-session playback control/metadata and MediaBrowser browse-tree population are separate pathways. A current session item does not automatically create a browsable YouTube catalogue.
+- Any future integration must be designed around permitted Android Auto media content and driving-safety requirements. The existing YouTube items are video items; do not misclassify them as audio or expose video playback while driving as a workaround.
+- This study made no source, manifest, logo, or branch changes. It did not build a new APK or perform device runtime testing.
+
+### E. Technical follow-up points for implementation review
+1. Trace how the app-specific AUTO•TQSM module/package wires the integrated YouTube page to its media-session binder in the actual build flavor.
+2. Decide whether AUTO•TQSM needs a legitimate browsable audio/media source, rather than assuming its existing video WebView can be listed as a standard Android Auto media catalogue.
+3. If a compliant browsable provider is implemented, define stable media IDs, root/child containers, item metadata, supported playback actions, and lifecycle/refresh notifications; test on phone and head unit separately.
