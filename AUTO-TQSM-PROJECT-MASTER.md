@@ -4,7 +4,7 @@ Last updated: 2026-11-17 (UTC)
 Repository: https://github.com/androidautoplayer-mie/Fermata
 Working branch: `urgent24jam`
 Project owner: user
-Purpose: a single Android Auto-oriented APK with exactly one YouTube component and one Browser component.
+Purpose: one AUTO•TQSM app targeting Android 10–17, RM0 cost, and Android Auto head-unit use; YouTube-first, with Browser subject to platform support and Mirror optional.
 
 ## 1. Non-negotiable scope
 
@@ -16,6 +16,8 @@ Purpose: a single Android Auto-oriented APK with exactly one YouTube component a
 - No Shizuku requirement.
 - Do not require the user to enable Android Developer Options as a prerequisite.
 - Budget target: RM0.
+- Compatibility target: Android 10–17. Current source minSdk is 28 (Android 9+); Android 10–17 compatibility is a target, not yet verified across all OS versions.
+- Must work with Android Auto players over USB and wireless where supported by the phone and head unit; both modes require real-device testing.
 - Do not add IPTV, TV, Movie, Facebook, TikTok, screen mirroring, or MATAMIERA features to AUTO•TQSM. Those belong to separate future projects and require separate approval.
 - Do not change the project scope, app identity, or user-approved design without explicit approval.
 - Do not claim Android Auto compatibility merely because an APK compiles or installs on a phone. Verify the actual Android Auto manifest/category/service integration and test on a compatible head unit.
@@ -36,7 +38,7 @@ Purpose: a single Android Auto-oriented APK with exactly one YouTube component a
 
 - Repository: https://github.com/androidautoplayer-mie/Fermata
 - Branch: `urgent24jam`
-- Current HEAD: `d96090f31e7adee7572ff02c31473f93f44d5bb9` (documentation-only audit commit; no APK built from this HEAD).
+- Current HEAD before this documentation update: `c9e2777676dfdbf6857b67e40af045062a4d7526` (scope clarification only; no APK built from this HEAD).
 - Previous successful baseline before recent registry cleanup: `4c6a0d5874687170d223ec5283e47773a52d154b`
 - Commit `e3632ad41712e9590fdb7443fa0812b0fa9f00e9` removed the old base addon registry block but caused a build failure because Gradle expected the `ext.addons` property.
 - Commit `2b0de5f4931579c7f3864f147769b5c85292c0fb` corrected that by explicitly setting `addons = []`. This is the current successful build commit.
@@ -155,6 +157,26 @@ User clarified their real-world Fermata usage:
 - Do not make Fermata Media a visible/user-facing destination or treat it as the user's primary workflow. Distinguish its hidden/internal media service implementation from a launcher entry: an internal service may still support Android media-session or Android Auto integration even when the user hides/does not open its launcher entry.
 - This clarification supersedes the earlier strict exclusion of Mirror: Mirror is now an optional integration candidate, subject to feasibility and separate safety/compatibility assessment. First deliver the YouTube-first Fermata Auto experience.
 - No source code changed and no APK built as part of recording this clarification.
+
+## 6I. User's three fixed project goals and Auto-vs-Media manifest audit (2026-11-17)
+
+User reaffirmed the three fixed goals:
+1. Target Android versions 10–17.
+2. RM0.00 user cost.
+3. Function on Android Auto head units/players.
+
+Compatibility across Android 10–17 and USB/wireless head-unit connections is a target only; current minSdk 28 proves Android 9+ is permitted by manifest metadata, not that Android 10–17 have all been tested or that all head units work.
+
+Further source audit findings:
+- `fermata/src/auto/AndroidManifest.xml` declares `CarService` with `CATEGORY_PROJECTION` and `CATEGORY_PROJECTION_OEM`; this service label is `@string/app_name`.
+- `fermata/src/main/res/values/strings.xml` defines the release app name as `AUTO•TQSM` and the media-service label as `AUTO•TQSM Media Service`.
+- `fermata/src/main/AndroidManifest.xml` declares `FermataMediaService` separately as an Android `MediaBrowserService`; this explains why a distinct Media Service label exists, but does not by itself explain why the projection `CarService` entry is absent from the user's Android Auto list.
+- `fermata/src/main/res/xml/automotive_app_desc.xml` contains only `<uses name="media" />`. This declares media capability; it does not declare a projection service. The projection services are separately declared in the auto flavor manifest.
+- The same auto manifest declares `MirrorService` with projection categories and `MirrorServiceFS` as a navigation-category `CarAppService`.
+- The auto manifest also declares `<uses-feature android:name="android.hardware.type.automotive" android:required="true" />`. This is a potential compatibility/visibility concern for a phone-based Android Auto app because it marks automotive hardware as required. It is not yet proven to be the cause of the missing `CarService` entry; compare with a known-working official Fermata Auto merged manifest before changing it.
+- Workflow explicitly builds `autoRelease` via `fermata:packageAutoReleaseUniversalApk`; package suffix `.urgent24jam` and app name `AUTO•TQSM` are set. This confirms intended flavor selection, not the actual merged manifest contents.
+- Strong next diagnostic: inspect the merged manifest of the exact installed AUTO•TQSM APK and compare service declarations, feature flags, labels and package metadata against the user's known-working Fermata Auto APK. The previously downloaded CI artifact could not be opened by the current runtime; do not claim this comparison has been completed.
+- No source code was changed and no APK was built during this audit. The likely issue is narrowed to Android Auto discovery/registration of the projection service versus the separately discoverable media service; exact cause remains unconfirmed.
 
 ## 7. Work remaining (priority order)
 
