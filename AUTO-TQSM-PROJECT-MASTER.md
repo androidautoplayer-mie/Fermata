@@ -190,6 +190,19 @@ Further source audit findings:
 - No code or manifest was changed and no APK was built in this audit. No installer workaround is approved or required by this project; preserve the user's no-Shizuku/no-Developer-Options requirement and RM0 target.
 
 
+## 6K. YouTube media-library integration feasibility audit (2026-11-17)
+
+- Re-inspected the exact current branch implementation. `YoutubeAddon` extends `WebBrowserAddon` and implements only `PreferenceStore.Listener`; it does not implement `MediaLibAddon`. `WebBrowserAddon` is a phone-side fragment addon, not an Android Auto media-library provider.
+- `DefaultMediaLib.getChildren(Root)` adds the last-played item, Folders, Favorites, Playlists, and then only addon roots implementing `MediaLibAddon`. The `MediaLibAddon` contract requires `isSupportedItem`, `getRootItem`, and `getItem`.
+- A working upstream example exists in the optional TV module: `TvAddon implements MediaLibAddon`, and `TvRootItem` extends `ItemContainer`. This proves the extension pattern is available in the codebase, but does not make it appropriate to adapt TV/video content for Android Auto.
+- The current YouTube engine is explicitly video-oriented: `YoutubeMediaEngine.Current` is created from the active YouTube page URL; its base `YoutubeItem.isVideo()` returns true; `YoutubeMediaEngine.start()` calls `YoutubeWebView.play()`, which controls the page's HTML video element. `YoutubeFragment` also restores/reopens the last video when the car activity is created, with autoplay disabled on fresh car launch. These source facts show the current implementation is not an audio-only media source.
+- Android for Cars official documentation describes the media browser hierarchy as browsable/playable audio content controlled through the media session. Android Auto's media app interface is not a general-purpose video/browser surface. Sources: https://developer.android.com/training/cars/media and https://developer.android.com/training/cars/media/create-media-browser/content-hierarchy
+- Decision: do not expose the current `YoutubeItem` as a playable Android Auto media-library item, because it is marked as video and starts the page video element. Do not try to hide the video surface while retaining a video playback path for use while driving.
+- A compliant next design would require a genuinely audio-only source and media item implementation, separate from the existing YouTube WebView video engine, with supported media-session behavior and no video autoplay. The current source audit does not establish that such an audio-only YouTube stream path exists, nor that it can be implemented within RM0 and platform terms. Do not claim it is ready.
+- Keep the phone-side YouTube WebView as a distinct feature; treat any browser/video projection or mirroring as parked-only and subject to platform/device support. Mirror remains optional and is not a substitute for a compliant media browsing implementation.
+- No source code was changed and no APK was built during this audit. This is an architecture/feasibility finding, not a runtime test.
+
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
