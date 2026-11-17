@@ -116,6 +116,15 @@ Do not mark either Settings or YouTube playback as fixed without identifying the
 - The artifact ZIP was retrieved for direct inspection, but the current analysis runtime could not open the downloaded file. Treat merged-manifest inspection as still outstanding; do not infer it from source manifests or the partial CI metadata output.
 - No source code was changed and no new APK was built during this audit. Latest successful APK remains from commit `2b0de5f4931579c7f3864f147769b5c85292c0fb`, not current HEAD.
 
+## 6E. Source-path audit: Android Auto media root, add-on registration, Settings (2026-11-17)
+
+- `settings.gradle` includes only dynamic feature module `:web` (not every directory under modules). `:web` registers exactly `YoutubeAddon` and `WebBrowserAddon` in `modules/web/build.gradle`.
+- `AddonManager` loads configured add-ons from `BuildConfig.ADDONS` only when their enabled preference is true; the dynamic feature is installed on demand through `DynamicModuleInstaller`.
+- `YoutubeAddon` extends `WebBrowserAddon`, and `WebBrowserAddon` is not a `MediaLibAddon`. Neither is registered as a `MediaLibAddon` in the inspected source. `DefaultMediaLib.getChildren(root)` adds only add-ons returned by `AddonManager.getAddons(MediaLibAddon.class)` after last-played, Folders, Favorites and Playlists. This source-level path explains why the Android Auto media browse root can show only those standard containers and no YouTube/Browser entry. This is not evidence of an Android 16 compatibility defect.
+- Settings path: `SettingsFragment.addAddons()` iterates `BuildConfig.ADDONS`, creates an `AddonPrefsBuilder`, and adds the add-on enabled toggle. It calls `contributeSettings()` only if the add-on instance is already loaded. This is a source-path observation, not a confirmed explanation for the user's Settings crash; no crash stack trace/log has been captured.
+- YouTube playback path: `YoutubeMediaEngine.start()` calls `YoutubeWebView.play()`, which executes JavaScript to call the current HTML video element's `play()`. `YoutubeMediaEngine.playing(url)` updates the media engine callback when a video-playing event arrives. The inspected `YoutubeWebClient` only routes non-YouTube URLs to the Browser fragment. These snippets do not establish why the user's tap added an item to a playlist; no click-event stack trace or runtime log is available.
+- No code changes, manifest changes, or new APK build were made in this source audit. Next investigation should inspect the actual APK merged manifest and the UI click/listener path associated with the reported playlist action before proposing a fix.
+
 ## 7. Work remaining (priority order)
 
 1. Preserve this master file and update it after every material change.
