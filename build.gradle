@@ -16,20 +16,7 @@ ext {
     ANDROIDX_SWIPEREFRESHLAYOUT_VERSION = libs.versions.androidxSwiperefreshlayout.get()
     GUAVA_VERSION = libs.versions.guava.get()
 
-    addons = [
-            [
-                    name       : 'translate',
-                    icon       : 'translate',
-                    class      : 'me.aap.fermata.addon.TranslateAddon',
-                    hasSettings: false
-            ],
-            [
-                    name   : 'subgen',
-                    icon   : 'subgen',
-                    class  : 'me.aap.fermata.addon.SubGenAddon',
-                    depends: 'exoplayer,translate'
-            ],
-    ]
+    // AUTO•TQSM includes only the YouTube and Web Browser add-ons.
 }
 
 buildscript {
