@@ -96,3 +96,13 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - No application source, YouTube/Browser code, or logo assets were changed in this audit.
 - No build was run in this step. Physical-device testing remains outstanding.
 - Next: inspect the Mirror entry points and UI conventions before adding any optional Root route selection or capability status. Keep current dispatch behavior intact; do not claim a universal touch-control route.
+
+### 2026-11-18 — Confirm original Accessibility route must remain intact
+
+- Re-fetched the active Mirror source files and confirmed the current dispatcher flow in `EventDispatcher.get()`: multi-window sessions use Accessibility; otherwise an active Fermata activity uses the in-app Activity dispatcher; when no active Fermata activity is available, the existing Xposed dispatcher is selected, which falls back to Accessibility when Xposed cannot dispatch.
+- Confirmed the Accessibility service remains declared in the auto manifest and its metadata retains gesture dispatch, multi-finger gesture, window-content retrieval, and interactive-window capabilities.
+- Confirmed Accessibility also remains the fallback for Back/Home/tap/motion paths and the multi-window path. These are existing behaviors and must not be removed, bypassed, or replaced by a new route.
+- User clarified explicitly: preserve the original Accessibility implementation and behavior. Any future route or capability work must be additive and must leave Accessibility intact.
+- No application source, manifest, settings, YouTube/Browser code, or logo assets were changed in this inspection.
+- No build or physical-device test was run in this step. The earlier CI attempts remain cancelled; no successful APK is verified.
+- Next: inspect the Mirror settings/entry-point conventions and any existing Root initialization call sites before designing additive status or optional-route handling. Do not alter dispatcher selection until the full call-site/lifecycle picture is verified.
