@@ -28,11 +28,9 @@ include ':fermata'
 include ':utils'
 project(':utils').projectDir = file('depends/utils')
 
-// AUTO•TQSM includes the complete Fermata Auto module set.
-// Keep Google Drive conditional because CI builds without Google Services credentials.
+// Include every Fermata Auto module in AUTO•TQSM; do not silently omit modules.
 file('modules').eachDir {
     def name = ':' + it.name
-    if ((':gdrive' == name) && !gradle.ext.enableGoogleServices) return
     gradle.ext.modules.add(name)
     include name
     project(name).projectDir = it
