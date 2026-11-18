@@ -23,14 +23,14 @@ if ((gradle.ext.localProps['storeFile'] == null ||
     }
 }
 
-
-rootProject.name = 'Fermata Music Player'
+rootProject.name = 'AUTO•TQSM'
 include ':fermata'
 include ':utils'
 project(':utils').projectDir = file('depends/utils')
 
+// AUTO•TQSM includes the complete Fermata Auto module set.
+// Keep Google Drive conditional because CI builds without Google Services credentials.
 file('modules').eachDir {
-    if (it.name != 'web') return
     def name = ':' + it.name
     if ((':gdrive' == name) && !gradle.ext.enableGoogleServices) return
     gradle.ext.modules.add(name)
