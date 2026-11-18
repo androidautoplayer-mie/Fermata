@@ -89,24 +89,10 @@ public class ProjectionActivity extends ActivityBase {
 	}
 
 	private FutureSupplier<?> requestRootPermission() {
-		if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) || isAccessibilityEnabled())
-			return completedVoid();
-		Log.i("Requesting ACTION_ACCESSIBILITY_SETTINGS permission");
-		var p = new Promise<>();
-		var intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-		intent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_SINGLE_TOP);
-		startActivity(intent);
-		getContentResolver().registerContentObserver(
-				Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES), false,
-				new ContentObserver(FermataApplication.get().getHandler()) {
-					@Override
-					public void onChange(boolean selfChange) {
-						if (!isAccessibilityEnabled()) return;
-						getContentResolver().unregisterContentObserver(this);
-						p.complete(null);
-					}
-				});
-		return p;
+		return Su.get().onSuccess(su -> {
+			EventDispatcher.useSu(su);
+			su.exec("appops set " + getPackageName() + " PROJECT_MEDIA allow");
+		});
 	}
 
 	private FutureSupplier<Intent> requestScreenCapturePermission() {
