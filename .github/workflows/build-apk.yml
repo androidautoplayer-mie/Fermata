@@ -120,6 +120,26 @@ jobs:
           ./gradlew fermata:packageAutoReleaseUniversalApk -PABI=armeabi-v7a "${ARGS[@]}"
           mv $out/*.apk dist/arm/
 
+      - name: Build non-minified diagnostic APK
+        env:
+          NO_GS: true
+        run: |
+          out=fermata/build/outputs/apk_from_bundle/autoDebug
+          mkdir -p dist/diagnostic
+          ARGS=(--build-cache)
+          [ -z "$APP_NAME" ] || ARGS+=("-PAPP_NAME=$APP_NAME")
+          [ -z "$APP_ID_SFX" ] || ARGS+=("-PAPP_ID_SFX=$APP_ID_SFX")
+          ./gradlew fermata:packageAutoDebugUniversalApk -PABI=arm64-v8a "${ARGS[@]}"
+          mv "$out"/*.apk dist/diagnostic/
+
+      - name: Upload diagnostic APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-tqsm-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-diagnostic-arm64
+          path: dist/diagnostic/*.apk
+          retention-days: 30
+          if-no-files-found: error
+
       - name: Verify APK signature and package metadata
         run: |
           apk=$(find dist/arm64 -maxdepth 1 -name '*.apk' -print -quit)
