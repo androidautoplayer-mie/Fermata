@@ -150,3 +150,12 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - Evidence interpretation: these photographs document the displayed states only. They do not establish that Accessibility was enabled, that the requested permissions were granted, that touch input from the head unit controlled the phone, or which USB/wireless connection mode was used. Phone model and Android version are not established by the photographs.
 - No source code, manifest, settings, YouTube/Browser code, or logo assets were changed in this evidence review. No build was run and no APK is verified by these photographs.
 - Next: continue repository-wide Root call-site/lifecycle audit using a complete source inventory where available; separately record a controlled device test for display, touch response, permission state, and connection mode. Preserve the original Accessibility implementation and behavior.
+
+
+### 2026-11-18 — Recheck previous CI attempt and code-search scope
+
+- Rechecked Build #51 / run `44226613562`: GitHub reports job `134541852626` (`Build Fermata Auto APKs`) as completed with conclusion `cancelled`.
+- Rechecked run artifacts: no artifacts were returned. Therefore this run did not produce a verified APK.
+- Repeated GitHub code searches for `EventDispatcher useSu` and `Su.get`; the connector searches the repository's default branch, not the active `urgent24jam` branch. These empty results cannot be used as evidence that call sites are absent from the active branch.
+- No source code was changed. The active-branch AUTO module scan previously covered 16 Java files; the repository-wide 376-file scan remains incomplete.
+- Next: obtain a complete checkout or branch-aware recursive source inventory before making any Root/dispatcher changes. Keep the active dispatcher, Accessibility behavior, Xposed path, and existing Root fallback unchanged until then.
