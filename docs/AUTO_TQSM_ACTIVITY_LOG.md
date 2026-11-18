@@ -28,27 +28,28 @@ Log opened: 2026-11-18
 - File: `fermata/src/auto/java/me/aap/fermata/auto/ProjectionActivity.java`
 - Change: removed the mandatory Root setup step from the projection startup permission chain. Overlay/write-settings checks and the official MediaProjection consent request remain.
 - Existing YouTube, Browser, and unrelated app modules were not intentionally changed by this commit.
-- CI Build #49: [run 44225850452](https://github.com/androidautoplayer-mie/Fermata/actions/runs/44225850452) — cancelled. This is not a successful build result.
-- CI Build #50: [run 44226090742](https://github.com/androidautoplayer-mie/Fermata/actions/runs/44226090742) — in progress at the time of this log update; this run was triggered by the activity-log documentation commit, so it tests the branch HEAD including the code change.
+- CI Build #49: [run 44225850452](https://github.com/androidautoplayer-mie/Fermata/actions/runs/44225850452) — cancelled.
+- CI Build #50: [run 44226090742](https://github.com/androidautoplayer-mie/Fermata/actions/runs/44226090742) — cancelled during the `Build APKs` step. SDK/Gradle setup steps completed, but APK build did not complete. This is not a successful build.
 - Not complete: compatibility diagnostics and a supported alternative touch-control route for devices where Accessibility cannot be enabled.
 - Not verified yet: runtime behavior on physical phones and Android Auto head units.
 
 ### 2026-11-18 — Mirror touch-dispatch audit (read-only)
 
-- Reviewed `ProjectionActivity.java`, `ProjectionService.java`, `MirrorService.java`, `MirrorActivity.java`, `EventDispatcher.java`, and `AccessibilityEventDispatcherService.java` on branch `urgent24jam`.
+- Reviewed `ProjectionActivity.java`, `ProjectionService.java`, `MirrorService.java`, `MirrorActivity.java`, `MirrorDisplay.java`, `EventDispatcher.java`, and `AccessibilityEventDispatcherService.java` on branch `urgent24jam`.
 - Confirmed the projection startup chain now requests overlay permission, write-settings permission, and then the official MediaProjection consent. It no longer calls the Root setup step.
-- Confirmed Mirror touch input from the head-unit surface is forwarded through `MirrorDisplay.motionEvent()`; dispatcher selection can fall back to Accessibility, while Xposed and Root dispatchers remain in the existing source.
-- Important limitation: removing the mandatory Root step does not create a new non-Accessibility touch route. The current source still relies on supported in-app activity dispatch or Accessibility/Xposed/Root paths depending on runtime state.
+- Confirmed head-unit touch events enter through `MirrorDisplay.motionEvent()`, are translated to phone display coordinates, and are passed to `EventDispatcher`.
+- Confirmed an in-app `ActivityDispatcher` path exists when a supported Fermata activity is active. If that route is unavailable, the current dispatcher can fall back to Xposed and then Accessibility; Accessibility also handles multi-window and gesture cases. Root dispatch remains present in existing source.
+- Important limitation: removing the mandatory Root step does not create a new non-Accessibility touch route for all devices. The current code does not yet expose a reliable user-facing capability check for display-only versus touch-control operation.
 - No code was changed during this audit. No YouTube, Browser, or unrelated module was edited.
-- Next engineering task: inspect `MirrorDisplay` and the exact touch-event coordinate/dispatch path, then design a truthful capability check. Investigate any alternative input path separately before implementing it; do not claim Bluetooth HID or universal touch support without evidence.
+- Next engineering task: design a non-invasive capability/status check around the existing dispatcher selection, without changing dispatch behavior until each branch is understood. Investigate alternative input routes separately; do not assume Bluetooth HID works without device/player testing.
 - Physical-device testing remains outstanding.
 
 ## Next steps
 
-1. Verify Build #50 and record its final result before further code changes.
-2. Inspect `MirrorDisplay` touch forwarding and coordinate transformation.
-3. Design a compatibility check that distinguishes screen display from touch-control capability.
-4. Investigate legitimate supported alternative input routes; do not assume Bluetooth HID works without device/player testing.
+1. Obtain an uninterrupted CI run for the current code commit and record the actual result.
+2. Inspect the exact dispatcher selection conditions and activity/window lifecycle to define accurate capability states.
+3. Design a compatibility check that distinguishes screen display from touch-control capability without changing existing dispatch behavior.
+4. Investigate legitimate supported alternative input routes; do not assume Bluetooth HID works without evidence.
 5. Add clear in-app status and guidance for unsupported control modes, isolated to Mirror.
 6. Test on physical devices and record phone model, Android version, USB/wireless connection, display result, and touch result.
 
