@@ -289,3 +289,16 @@ Scope: read-only study of the Fermata-derived code currently present on branch `
 - Therefore, the complete repository-wide source call-site scan is STILL NOT DONE. Do not state that `useSu()` or `Su.get()` has no caller anywhere in the repository. The current confirmed result is limited to the AUTO module files and the explicitly re-fetched Mirror/dispatcher files.
 - No application source, manifest, settings, YouTube/Browser code, or logo assets were changed. No build or device test was run. No APK is verified by this recheck.
 - Next: obtain a complete branch checkout or a branch-aware source-content search to scan all 453 Java files (and any Kotlin/JavaScript callers if relevant). Until then, preserve the current dispatcher and Accessibility behavior; do not add or remove Root initialization or alter Xposed fallback.
+
+
+## 6N. AUTO source-scope Root call-site scan (2026-11-18)
+
+- Retrieved the recursive Git tree for `urgent24jam` and fetched every Java file under `fermata/src/auto/java/` by its exact blob SHA.
+- All 16 AUTO Java files were fetched successfully; no fetch errors.
+- Exact-token scan across those 16 files found Root-related references in only two files: `EventDispatcher.java` and `Su.java`.
+- In `EventDispatcher.java`, `useSu(Su)` appears as a method definition (lines 29-30); the five `SuDispatcher.get()` calls are fallback reads in Accessibility dispatch methods (lines 194, 201, 208, 220, 228). `SuDispatcher.instance` is initialized with `completedNull()` (line 234). No invocation of `useSu()` was found in any of the 16 AUTO Java files.
+- In `Su.java`, `Su.get()` is defined (line 28) and internally constructs `new Su(...) ` after its `su -c ls` probe succeeds (line 35). No call to `Su.get()` was found in the 16 AUTO Java files.
+- Therefore, within the complete AUTO Java source directory, Root fallback is present but its activation path is not connected by a discovered caller. This is a scoped result only; it does NOT prove there is no caller in other repository source sets or generated/injected code.
+- Dispatcher selection remains: multi-window -> Accessibility; active Fermata Activity -> Activity dispatcher; otherwise -> Xposed dispatcher. Xposed dispatch has Accessibility fallback. Accessibility's Back/Home/Tap/Motion handlers try the Accessibility service first, then consult the Root dispatcher only if that attempt fails.
+- No source code, manifest, settings, YouTube/Browser code, or logo assets changed. No build or device test was run; no APK is verified.
+- Next: inspect the remaining source sets for references/imports to `EventDispatcher.useSu`, `Su.get()`, or reflection/integration hooks that could activate Root. Keep existing dispatcher behavior unchanged until that cross-source check is complete.
