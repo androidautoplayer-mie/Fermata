@@ -119,3 +119,14 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - No application source, manifest, settings, YouTube/Browser code, or logo assets were changed in this review.
 - No build or physical-device test was run. Previous CI attempts remain cancelled; no successful APK is verified.
 - Next: inspect the call sites that initialize `EventDispatcher.useSu()` and the Mirror launch/settings entry points on the active branch. Only after that should a minimal, read-only capability/status design be proposed. Preserve all existing dispatcher behavior.
+
+
+### 2026-11-18 — Mirror entry and Root-dispatch call-site review (read-only)
+
+- Re-fetched active-branch `ProjectionActivity.java`, `ProjectionService.java`, `MirrorService.java`, `MirrorDisplay.java`, `LauncherActivity.java`, `EventDispatcher.java`, and the existing Accessibility/Xposed dispatcher services.
+- Confirmed `ProjectionActivity` performs the sequential overlay, write-settings, and official MediaProjection consent flow. `ProjectionService` starts the foreground media-projection service only after receiving the user-approved capture intent.
+- Confirmed `MirrorService` and `MirrorActivity` acquire/release the shared `MirrorDisplay`; `MirrorDisplay` creates/manages the VirtualDisplay session, forwards one- and multi-pointer head-unit touch events to the existing `EventDispatcher`, and starts/stops the Xposed dispatcher service as part of its lifecycle.
+- Confirmed `LauncherActivity` is the Mirror app-launcher UI and launches selected apps with the existing mirror-mode intent extra. No new Mirror settings/route selector was added in this review.
+- `EventDispatcher.useSu(Su)` appears as a method definition in the inspected active-branch dispatcher file. No call site was found in the Mirror files inspected. Repository-wide call-site confirmation remains incomplete because the available GitHub code search did not return indexed results for the active branch; do not infer that no call site exists elsewhere.
+- No source code, manifest, YouTube/Browser code, or logo assets were changed. No build or device test was run. No successful APK is verified.
+- Engineering decision: do not change dispatcher selection or add a capability UI yet. First obtain a reliable repository-wide call-site inventory (for example, a complete checkout/code search) and verify the exact Mirror entry-point/settings wiring. Preserve current Accessibility behavior and the existing optional Root/Xposed code paths until that evidence is available.
