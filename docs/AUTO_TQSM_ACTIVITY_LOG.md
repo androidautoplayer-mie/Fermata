@@ -63,3 +63,12 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - Build #51 / run [44226613562](https://github.com/androidautoplayer-mie/Fermata/actions/runs/44226613562) was cancelled during the `Build APKs` step; setup steps succeeded, but APK build did not finish.
 - Retried the cancelled `Build Fermata Auto APKs` job using GitHub Actions job retry. GitHub accepted the retry request.
 - Retry outcome is pending; do not treat it as a successful build until the new attempt completes and APK verification/upload steps succeed.
+
+
+### 2026-11-18 — Preserve pre-change Mirror state
+
+- User raised a valid concern that experimental work should be set aside rather than discarded.
+- Preserved the exact pre-rootless-change repository state in branch `tqsm-mirror-before-rootless`, created from parent commit `51a3101a8c8329e5ec9761a9718bb16bf7687beb`.
+- The experimental change remains in `urgent24jam` at commit `e5bdc63974924008ef621037416e02529bf0713b`; it removed the mandatory Root permission step from projection startup and removed its helper method, but did not remove the existing dispatcher classes or Accessibility service paths.
+- No YouTube or Browser code was changed by this experiment.
+- Going forward, keep experimental changes isolated and retain a known-good fallback branch; do not merge or replace stable behavior until build and device tests validate the change.
