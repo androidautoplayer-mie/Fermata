@@ -26,7 +26,11 @@ public class Provider extends VfsProviderBase {
 	public FutureSupplier<VirtualFileSystem> createFileSystem(
 			Context ctx, Supplier<FutureSupplier<? extends AppActivity>> activitySupplier, PreferenceStore ps) {
 		BasicPreferenceStore store = new BasicPreferenceStore();
-		store.applyStringPref(GOOGLE_TOKEN, ctx.getString(me.aap.fermata.R.string.default_web_client_id));
+		int clientIdRes = ctx.getResources().getIdentifier(
+				"default_web_client_id", "string", ctx.getPackageName());
+		if (clientIdRes != 0) {
+			store.applyStringPref(GOOGLE_TOKEN, ctx.getString(clientIdRes));
+		}
 		return new GdriveFileSystem.Provider(activitySupplier).createFileSystem(store);
 	}
 
