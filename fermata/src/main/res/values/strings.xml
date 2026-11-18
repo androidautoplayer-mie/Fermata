@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name_mobile_release" translatable="false">Fermata</string>
+    <string name="app_name_mobile_release" translatable="false">AUTO•TQSM</string>
     <string name="app_name_auto_release" translatable="false">AUTO•TQSM</string>
-    <string name="app_name_mobile_debug" translatable="false">Debug Fermata</string>
-    <string name="app_name_auto_debug" translatable="false">Debug Fermata Auto</string>
+    <string name="app_name_mobile_debug" translatable="false">AUTO•TQSM (Debug)</string>
+    <string name="app_name_auto_debug" translatable="false">AUTO•TQSM Auto (Debug)</string>
     <string name="mirror_service_name_release" translatable="false">TQSM Mirror</string>
     <string name="mirror_service_name_debug" translatable="false">Debug TQSM Mirror</string>
-    <string name="mirror_fs_service_name_release" translatable="false">FS Fermata Mirror</string>
-    <string name="mirror_fs_service_name_debug" translatable="false">Debug FS Fermata Mirror</string>
+    <string name="mirror_fs_service_name_release" translatable="false">TQSM Mirror File Service</string>
+    <string name="mirror_fs_service_name_debug" translatable="false">Debug TQSM Mirror File Service</string>
     <string name="media_service_name_mobile_release" translatable="false">@string/app_name_mobile_release</string>
     <string name="media_service_name_auto_release" translatable="false">AUTO•TQSM Media Service</string>
     <string name="media_service_name_mobile_debug" translatable="false">@string/app_name_mobile_debug</string>
-    <string name="media_service_name_auto_debug" translatable="false">Debug Fermata Media Service</string>
+    <string name="media_service_name_auto_debug" translatable="false">AUTO•TQSM Media Service (Debug)</string>
     <string name="engine_mp_name" translatable="false">MediaPlayer</string>
     <string name="engine_exo_name" translatable="false">ExoPlayer</string>
     <string name="engine_vlc_name" translatable="false">VLC</string>
@@ -374,12 +374,12 @@
     <string name="open_log">Open log file</string>
     <string name="unlock_phone_and_grant">Unlock the phone and grant the requested permissions.</string>
     <string name="screen_capture_rejected">Screen capture request rejected.</string>
-    <string name="accessibility_dsc">The accessibility service is used by Fermata Mirror to simulate touch screen events.</string>
+    <string name="accessibility_dsc">The accessibility service is used by TQSM Mirror to relay touch-screen interactions to the mirrored phone display.</string>
     <string name="media_projection_action_text">Start now</string>
 
     <string name="about">About</string>
-    <string name="about_html"><![CDATA[<H1 align="center">Fermata Media Player</H1>
-        <p>Fermata Media Player is a free, open source audio and video player with a simple and
+    <string name="about_html"><![CDATA[<H1 align="center">AUTO•TQSM</H1>
+        <p>AUTO•TQSM is an audio and media application built from the Fermata open-source project with a simple and
         intuitive interface.</p>
         <p><b>Author:</b> Andrey Pavlenko</p>
         <p><b>Version:</b> %1$s (%2$d)</p>
