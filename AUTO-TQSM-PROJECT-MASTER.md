@@ -302,3 +302,22 @@ Scope: read-only study of the Fermata-derived code currently present on branch `
 - Dispatcher selection remains: multi-window -> Accessibility; active Fermata Activity -> Activity dispatcher; otherwise -> Xposed dispatcher. Xposed dispatch has Accessibility fallback. Accessibility's Back/Home/Tap/Motion handlers try the Accessibility service first, then consult the Root dispatcher only if that attempt fails.
 - No source code, manifest, settings, YouTube/Browser code, or logo assets changed. No build or device test was run; no APK is verified.
 - Next: inspect the remaining source sets for references/imports to `EventDispatcher.useSu`, `Su.get()`, or reflection/integration hooks that could activate Root. Keep existing dispatcher behavior unchanged until that cross-source check is complete.
+
+
+## 6O. User directive — AA Browser component intake first (2026-11-18)
+
+This section records the user's explicit implementation order and overrides earlier audit-first wording wherever they conflict.
+
+- AUTO•TQSM's original functional base remains Fermata Auto: YouTube, Browser, Mirror, AUTO/Android Auto integration, Launcher, and related services/components.
+- The separate AA Browser repository is a second source. Its role in this project is to supply Android-version compatibility components/code for the Android 10–17 target.
+- **Implementation order is now: bring the AA Browser components relevant to Android-version support into the AUTO•TQSM working branch first; assess suitability, conflicts, required adaptations, and runtime behavior afterwards.**
+- Do not spend the next work phase on another broad compatibility study, speculative architecture, or lengthy audit before intake. Do not redesign or replace existing Fermata components.
+- Preserve Fermata-derived files and behavior. Add AA Browser material alongside the existing implementation first; do not overwrite or delete existing AUTO•TQSM/Fermata files as part of the initial intake.
+- Keep imported material identifiable and grouped so it can be reviewed and selectively adapted later. Preserve upstream file paths where practical; where paths collide, stage the incoming copy separately rather than overwriting the Fermata implementation.
+- Source reference already recorded in this master: `androidautohacks/AABrowser` (main). Respect its GPL-3.0 license, attribution, modification notices, and corresponding-source obligations. Do not represent the imported code as already compatible or integrated at runtime.
+- After intake, perform the suitability/compatibility review and decide which imported components can be wired into AUTO•TQSM for Android 10–17. The target remains one AUTO•TQSM app/package, not a separate AABrowser app.
+- The user has explicitly said: “Ambik dulu, yg lain kemudian, biar ada di TQSM duku, baru kaji sesuai ataw tak.” This is the controlling order for the next implementation phase.
+
+## 9A. Change log — 2026-11-18
+
+- 2026-11-18: User clarified that AA Browser's role is to contribute Android-version compatibility components to AUTO•TQSM. Priority changed from audit-first to component-intake-first; suitability review follows after the source is present in the project.
