@@ -83,3 +83,16 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - Build #51 run `44226613562`, retry attempt 2, completed with conclusion `cancelled`. Its APK build job was cancelled; no successful APK verification or upload is confirmed.
 - No source code or logo assets were changed in this review.
 - Next: design an additive implementation that keeps the original Root startup route available as an option alongside the newer route. Before writing code, inspect the current permission and preference architecture; do not overwrite the active file wholesale from the backup branch, because that could roll back unrelated changes.
+
+### 2026-11-18 — Dispatcher and permission architecture audit (read-only)
+
+- Re-inspected the active urgent24jam sources: ProjectionActivity.java, ProjectionService.java, EventDispatcher.java, MirrorDisplay.java, AccessibilityEventDispatcherService.java, Su.java, fermata/src/auto/AndroidManifest.xml, and accessibility.xml.
+- Confirmed screen display is established through the Android MediaProjection consent flow in ProjectionActivity and the foreground ProjectionService.
+- Confirmed touch dispatch selection: multiple windows select Accessibility; otherwise the app uses the in-app Activity dispatcher when a supported Fermata activity is active, and falls back to Xposed/Accessibility when it is not.
+- Confirmed Accessibility is also used for gesture and multi-window cases. The Root dispatcher remains in EventDispatcher as a fallback when Root has been initialized; the previous Root startup helper was removed from the active branch by the rootless experiment.
+- Confirmed Su.get() invokes the Android su process and therefore only applies where a rooted device and its authorization flow support it. This is not a general non-root solution.
+- The auto module manifest declares the Accessibility service and Xposed service; the accessibility metadata declares gesture and window-content capabilities.
+- The repository has an existing preference/settings framework, but no dedicated Mirror route-selection preference or setup assistant was identified in the files reviewed so far.
+- No application source, YouTube/Browser code, or logo assets were changed in this audit.
+- No build was run in this step. Physical-device testing remains outstanding.
+- Next: inspect the Mirror entry points and UI conventions before adding any optional Root route selection or capability status. Keep current dispatch behavior intact; do not claim a universal touch-control route.
