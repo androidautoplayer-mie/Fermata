@@ -72,3 +72,14 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - The experimental change remains in `urgent24jam` at commit `e5bdc63974924008ef621037416e02529bf0713b`; it removed the mandatory Root permission step from projection startup and removed its helper method, but did not remove the existing dispatcher classes or Accessibility service paths.
 - No YouTube or Browser code was changed by this experiment.
 - Going forward, keep experimental changes isolated and retain a known-good fallback branch; do not merge or replace stable behavior until build and device tests validate the change.
+
+
+### 2026-11-18 — Confirm route preservation state and CI retry result
+
+- Re-fetched the active and preserved versions of `fermata/src/auto/java/me/aap/fermata/auto/ProjectionActivity.java`.
+- Active `urgent24jam` file blob: `cf1733ee0781d0c8bb3712b4d0efd42f5329f434`. It currently has no `requestRootPermission()` helper and no Root step in the projection startup chain.
+- Preserved branch `tqsm-mirror-before-rootless` file blob: `1db8a54bda1a4e422ba6d14666ca0ec22bc6180e`. It retains the original `requestRootPermission()` helper and startup step.
+- This confirms the old route is preserved in the backup branch, but is not yet present as an optional route in the active branch. Do not treat the backup branch alone as the final implementation.
+- Build #51 run `44226613562`, retry attempt 2, completed with conclusion `cancelled`. Its APK build job was cancelled; no successful APK verification or upload is confirmed.
+- No source code or logo assets were changed in this review.
+- Next: design an additive implementation that keeps the original Root startup route available as an option alongside the newer route. Before writing code, inspect the current permission and preference architecture; do not overwrite the active file wholesale from the backup branch, because that could roll back unrelated changes.
