@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    name: Build Fermata Auto APKs
+    name: Build AUTO•TQSM APKs
     runs-on: ubuntu-latest
 
     steps:
@@ -133,7 +133,7 @@ jobs:
       - name: Upload arm64 APK
         uses: actions/upload-artifact@v4
         with:
-          name: fermata-auto-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-arm64
+          name: auto-tqsm-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-arm64
           path: dist/arm64/*.apk
           retention-days: 30
           if-no-files-found: error
@@ -141,7 +141,7 @@ jobs:
       - name: Upload arm APK
         uses: actions/upload-artifact@v4
         with:
-          name: fermata-auto-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-arm
+          name: auto-tqsm-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-arm
           path: dist/arm/*.apk
           retention-days: 30
           if-no-files-found: error

@@ -6,7 +6,7 @@ android {
         applicationId project.getProperties().getOrDefault('APP_ID', 'me.aap.fermata')
         versionCode VERSION_CODE
         versionName VERSION_NAME
-        base.archivesName = "fermata-$versionName"
+        base.archivesName = "auto-tqsm-$versionName"
 
         ndk {
             //noinspection ChromeOsAbiSupport
