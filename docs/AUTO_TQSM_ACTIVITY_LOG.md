@@ -140,3 +140,13 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - Rechecked `MainActivity.java` and `SettingsFragment.java` for Mirror/Projection entry wiring. The inspected settings references concern existing car/mirror activity distinctions; no dedicated Root-vs-non-Root route selector or Mirror capability preference was found in these files.
 - No source code, manifest, settings, YouTube/Browser code, or logo assets were changed. No build or physical-device test was run. No successful APK is verified.
 - Decision: keep the current dispatcher and Accessibility behavior untouched. The call-site inventory is still explicitly incomplete; do not add route controls or claim Root initialization is unused until a complete checkout-level search is available.
+
+
+### 2026-11-18 — User-supplied physical-device visual evidence (Fermata Mirror)
+
+- Added a visual-evidence record based on the user's supplied photographs of a phone and Android Auto head unit.
+- The photographs show the phone's home screen mirrored on the head-unit display, a browser/web page (LAYARKACA21) visible on both phone and head unit, and the Mirror app-launcher view with installed apps.
+- The photographs also show the phone's Android Accessibility settings page with the Fermata Auto service listed as Off, the Fermata Auto "Modify system settings" permission screen with its switch appearing Off, and the head unit displaying "Unlock the phone and grant the requested permissions."
+- Evidence interpretation: these photographs document the displayed states only. They do not establish that Accessibility was enabled, that the requested permissions were granted, that touch input from the head unit controlled the phone, or which USB/wireless connection mode was used. Phone model and Android version are not established by the photographs.
+- No source code, manifest, settings, YouTube/Browser code, or logo assets were changed in this evidence review. No build was run and no APK is verified by these photographs.
+- Next: continue repository-wide Root call-site/lifecycle audit using a complete source inventory where available; separately record a controlled device test for display, touch response, permission state, and connection mode. Preserve the original Accessibility implementation and behavior.
