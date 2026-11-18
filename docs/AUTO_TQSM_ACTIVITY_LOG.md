@@ -106,3 +106,16 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - No application source, manifest, settings, YouTube/Browser code, or logo assets were changed in this inspection.
 - No build or physical-device test was run in this step. The earlier CI attempts remain cancelled; no successful APK is verified.
 - Next: inspect the Mirror settings/entry-point conventions and any existing Root initialization call sites before designing additive status or optional-route handling. Do not alter dispatcher selection until the full call-site/lifecycle picture is verified.
+
+
+### 2026-11-18 — Mirror lifecycle and existing settings review (read-only)
+
+- Re-fetched the active branch sources for `MirrorActivity.java`, `MirrorService.java`, `ProjectionActivity.java`, `MirrorDisplay.java`, `EventDispatcher.java`, `AccessibilityEventDispatcherService.java`, `XposedEventDispatcherService.java`, `Su.java`, the auto manifest, `accessibility.xml`, and `MainActivityPrefs.java`.
+- Confirmed `MirrorActivity` owns a `MirrorDisplay` reference, forwards head-unit touch input to `MirrorDisplay.motionEvent()`, updates/releases the surface across surface and activity lifecycle callbacks, and releases its display reference on destroy.
+- Confirmed `MirrorService` also acquires/releases a `MirrorDisplay` reference. `MirrorDisplay` uses a reference counter and shared weak reference, manages MediaProjection/VirtualDisplay session lifecycle, overlay, wake lock, rotation/brightness restoration, and Xposed service start/stop. Any future status UI must not interfere with these lifecycle paths.
+- Confirmed `ProjectionActivity` still uses sequential user-facing Android permission flows for overlay, write-settings, and MediaProjection consent; no automatic permission grant was introduced.
+- Confirmed `EventDispatcher.get()` chooses Accessibility for multi-window, the in-app Activity dispatcher when available, otherwise the existing Xposed dispatcher with Accessibility fallback. The Accessibility dispatcher retains its Root dispatcher fallback only when a Root session has already been initialized.
+- Confirmed `MainActivityPrefs` provides a shared preference framework, but no Mirror-specific route preference was found in the reviewed preference interface. No route-selection preference or new UI was added.
+- No application source, manifest, settings, YouTube/Browser code, or logo assets were changed in this review.
+- No build or physical-device test was run. Previous CI attempts remain cancelled; no successful APK is verified.
+- Next: inspect the call sites that initialize `EventDispatcher.useSu()` and the Mirror launch/settings entry points on the active branch. Only after that should a minimal, read-only capability/status design be proposed. Preserve all existing dispatcher behavior.
