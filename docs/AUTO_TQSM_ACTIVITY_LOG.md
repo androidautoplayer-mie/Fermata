@@ -130,3 +130,13 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - `EventDispatcher.useSu(Su)` appears as a method definition in the inspected active-branch dispatcher file. No call site was found in the Mirror files inspected. Repository-wide call-site confirmation remains incomplete because the available GitHub code search did not return indexed results for the active branch; do not infer that no call site exists elsewhere.
 - No source code, manifest, YouTube/Browser code, or logo assets were changed. No build or device test was run. No successful APK is verified.
 - Engineering decision: do not change dispatcher selection or add a capability UI yet. First obtain a reliable repository-wide call-site inventory (for example, a complete checkout/code search) and verify the exact Mirror entry-point/settings wiring. Preserve current Accessibility behavior and the existing optional Root/Xposed code paths until that evidence is available.
+
+
+### 2026-11-18 — AUTO module source and Mirror entry-point inventory (read-only)
+
+- Retrieved the recursive Git tree for the exact active branch `urgent24jam` and enumerated all 16 Java files under `fermata/src/auto/java/`.
+- Scanned the AUTO module sources for `EventDispatcher.useSu()`, `Su.get()`, and direct Root-dispatch initialization references. In the inspected AUTO module, `EventDispatcher.useSu(Su)` is present as a method definition in `EventDispatcher.java`; no additional call site was identified in the AUTO Java files inspected. This is not yet a complete repository-wide result because the broader 376-file source inventory could not be completed within the available GitHub tool-call limit.
+- Rechecked `fermata/src/auto/AndroidManifest.xml`: Mirror services, `ProjectionActivity`, `LauncherActivity`, `ProjectionService`, and the original Accessibility service are declared. The Accessibility service remains protected by Android's `BIND_ACCESSIBILITY_SERVICE` permission.
+- Rechecked `MainActivity.java` and `SettingsFragment.java` for Mirror/Projection entry wiring. The inspected settings references concern existing car/mirror activity distinctions; no dedicated Root-vs-non-Root route selector or Mirror capability preference was found in these files.
+- No source code, manifest, settings, YouTube/Browser code, or logo assets were changed. No build or physical-device test was run. No successful APK is verified.
+- Decision: keep the current dispatcher and Accessibility behavior untouched. The call-site inventory is still explicitly incomplete; do not add route controls or claim Root initialization is unused until a complete checkout-level search is available.
