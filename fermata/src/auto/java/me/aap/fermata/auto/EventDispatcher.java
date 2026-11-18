@@ -9,7 +9,6 @@ import static me.aap.fermata.auto.AccessibilityEventDispatcherService.getWindowC
 
 import android.content.Context;
 import android.os.Build;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 
@@ -19,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import me.aap.fermata.FermataApplication;
 import me.aap.fermata.ui.activity.MainActivity;
-import me.aap.utils.log.Log;
 
 abstract class EventDispatcher {
 
@@ -183,20 +181,17 @@ abstract class EventDispatcher {
 
 		@Override
 		public boolean back() {
-			if (AccessibilityEventDispatcherService.dispatchBack()) return true;
-			return false;
+			return AccessibilityEventDispatcherService.dispatchBack();
 		}
 
 		@Override
 		public boolean home() {
-			if (AccessibilityEventDispatcherService.dispatchHome()) return true;
-			return false;
+			return AccessibilityEventDispatcherService.dispatchHome();
 		}
 
 		@Override
 		public boolean tap(float x, float y) {
-			if (AccessibilityEventDispatcherService.dispatchTap(x, y)) return true;
-			return false;
+			return AccessibilityEventDispatcherService.dispatchTap(x, y);
 		}
 
 		@Override
@@ -206,15 +201,12 @@ abstract class EventDispatcher {
 
 		@Override
 		public boolean motionEvent(MotionEvent e) {
-			if (AccessibilityEventDispatcherService.dispatchMotionEvent(e)) return true;
-			return false;
+			return AccessibilityEventDispatcherService.dispatchMotionEvent(e);
 		}
 
 		@Override
 		public boolean motionEvent(long downTime, long eventTime, int action, float x, float y) {
-			if (AccessibilityEventDispatcherService.dispatchMotionEvent(downTime, eventTime, action, x,
-					y)) return true;
-			return false;
+			return AccessibilityEventDispatcherService.dispatchMotionEvent(downTime, eventTime, action, x, y);
 		}
 	}
 
