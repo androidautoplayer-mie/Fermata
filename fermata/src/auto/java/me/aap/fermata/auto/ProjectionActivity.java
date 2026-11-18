@@ -1,21 +1,15 @@
 package me.aap.fermata.auto;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
-import static android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES;
 import static me.aap.utils.async.Completed.completedVoid;
 import static me.aap.utils.function.ResultConsumer.Cancel.isCancellation;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.database.ContentObserver;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 
 import me.aap.fermata.FermataApplication;
-import me.aap.fermata.R;
 import me.aap.utils.async.FutureSupplier;
 import me.aap.utils.async.Promise;
 import me.aap.utils.log.Log;
@@ -64,10 +58,8 @@ public class ProjectionActivity extends ActivityBase {
 		}
 		starting = true;
 		checkOverlayPermission().thenIgnoreResult(this::checkWriteSettingsPermission)
-				.thenIgnoreResult(this::checkAccessibilityPermission)
 				.thenIgnoreResult(this::requestRootPermission)
 				.thenIgnoreResult(this::requestScreenCapturePermission).onCompletion((i, err) -> {
-					AccessibilityEventDispatcherService.autoClickOnButton(null);
 					if (promise != p) return;
 					starting = false;
 					finish();
@@ -96,7 +88,7 @@ public class ProjectionActivity extends ActivityBase {
 				Uri.parse("package:" + getPackageName())));
 	}
 
-	private FutureSupplier<?> checkAccessibilityPermission() {
+	private FutureSupplier<?> requestRootPermission() {
 		if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) || isAccessibilityEnabled())
 			return completedVoid();
 		Log.i("Requesting ACTION_ACCESSIBILITY_SETTINGS permission");
@@ -117,29 +109,8 @@ public class ProjectionActivity extends ActivityBase {
 		return p;
 	}
 
-	private boolean isAccessibilityEnabled() {
-		var cn = new ComponentName(this, AccessibilityEventDispatcherService.class);
-		var enabledServices =
-				Settings.Secure.getString(getContentResolver(), ENABLED_ACCESSIBILITY_SERVICES);
-		if (enabledServices == null) return false;
-		for (var c : enabledServices.split(":")) {
-			var n = ComponentName.unflattenFromString(c);
-			if ((n != null) && (n.equals(cn))) return true;
-		}
-		return false;
-	}
-
-	private FutureSupplier<?> requestRootPermission() {
-		return Su.get().onSuccess(su -> {
-			EventDispatcher.useSu(su);
-			su.exec("appops set " + getPackageName() + " PROJECT_MEDIA allow");
-		});
-	}
-
 	private FutureSupplier<Intent> requestScreenCapturePermission() {
 		Log.i("Requesting screen cast permission");
-		AccessibilityEventDispatcherService.autoClickOnButton(
-				getString(R.string.media_projection_action_text));
 		var mm = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
 		return startActivityForResult(mm::createScreenCaptureIntent);
 	}
