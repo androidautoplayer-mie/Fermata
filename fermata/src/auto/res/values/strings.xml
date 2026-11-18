@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_dsc">The accessibility service is used by TQSM Mirror to relay touch-screen interactions to the mirrored phone display.</string>
+</resources>
