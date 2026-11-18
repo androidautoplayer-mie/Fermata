@@ -159,3 +159,17 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - Repeated GitHub code searches for `EventDispatcher useSu` and `Su.get`; the connector searches the repository's default branch, not the active `urgent24jam` branch. These empty results cannot be used as evidence that call sites are absent from the active branch.
 - No source code was changed. The active-branch AUTO module scan previously covered 16 Java files; the repository-wide 376-file scan remains incomplete.
 - Next: obtain a complete checkout or branch-aware recursive source inventory before making any Root/dispatcher changes. Keep the active dispatcher, Accessibility behavior, Xposed path, and existing Root fallback unchanged until then.
+
+
+### 2026-11-18 — Root dispatcher call-chain recheck (read-only)
+
+- Re-fetched the exact active and preserved branch versions of `EventDispatcher.java`, `Su.java`, `AccessibilityEventDispatcherService.java`, `ProjectionActivity.java`, `XposedEventDispatcherService.java`, and `MirrorDisplay.java`.
+- Active and backup `EventDispatcher.java` blob SHA: `bbd7567e216cb0512a66a93973cd6b5208d6ec77`; active and backup `Su.java` blob SHA: `4c3d0993fe0443017441e21bc6dfc898611314c1`. These files are identical between the two branches.
+- Confirmed dispatcher selection: multi-window uses Accessibility; otherwise an active Fermata Activity uses the in-app Activity dispatcher; with no active Fermata Activity, Xposed is selected. Xposed touch/motion dispatch falls back to Accessibility when Xposed cannot dispatch.
+- Confirmed Accessibility Back/Home/Tap/Motion paths try the Accessibility service first and then consult `SuDispatcher.get()` only if Accessibility returns false.
+- `SuDispatcher.instance` starts as `completedNull()`; it becomes active only through `EventDispatcher.useSu(Su)`. The method definition remains, but no invocation has been found in the AUTO module files inspected so far.
+- `Su.get()` probes/starts the Android `su` process and is usable only where a rooted device and its authorization flow support it. It is not a non-root alternative.
+- Retrieved the full recursive path tree for branch `urgent24jam`: tree SHA `c65f8480ad6031402d23d2dc980b9bab4b8b1bdf`, `truncated=false`, 799 tracked blobs and 453 Java files. This proves the path inventory is complete, not that all 453 source contents have been searched.
+- GitHub code search remains scoped to the default branch. Therefore a repository-wide branch-aware content scan of all Java sources is still outstanding. Do not claim there are no Root call sites anywhere in the repository.
+- No application source, manifest, settings, YouTube/Browser code, or logo assets were changed. No build or physical-device test was run; no APK is verified.
+- Next: obtain a complete checkout or branch-aware content search for all 453 Java files (plus other relevant source types). Keep dispatcher, Accessibility, Xposed and existing Root fallback unchanged until that scan is complete.
