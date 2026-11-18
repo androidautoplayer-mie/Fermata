@@ -58,7 +58,6 @@ public class ProjectionActivity extends ActivityBase {
 		}
 		starting = true;
 		checkOverlayPermission().thenIgnoreResult(this::checkWriteSettingsPermission)
-				.thenIgnoreResult(this::requestRootPermission)
 				.thenIgnoreResult(this::requestScreenCapturePermission).onCompletion((i, err) -> {
 					if (promise != p) return;
 					starting = false;
@@ -86,13 +85,6 @@ public class ProjectionActivity extends ActivityBase {
 		Log.i("Requesting ACTION_MANAGE_WRITE_SETTINGS permission");
 		return startActivityForResult(() -> new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
 				Uri.parse("package:" + getPackageName())));
-	}
-
-	private FutureSupplier<?> requestRootPermission() {
-		return Su.get().onSuccess(su -> {
-			EventDispatcher.useSu(su);
-			su.exec("appops set " + getPackageName() + " PROJECT_MEDIA allow");
-		});
 	}
 
 	private FutureSupplier<Intent> requestScreenCapturePermission() {
