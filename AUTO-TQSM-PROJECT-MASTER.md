@@ -275,3 +275,17 @@ Scope: read-only study of the Fermata-derived code currently present on branch `
 1. Trace how the app-specific AUTO•TQSM module/package wires the integrated YouTube page to its media-session binder in the actual build flavor.
 2. Decide whether AUTO•TQSM needs a legitimate browsable audio/media source, rather than assuming its existing video WebView can be listed as a standard Android Auto media catalogue.
 3. If a compliant browsable provider is implemented, define stable media IDs, root/child containers, item metadata, supported playback actions, and lifecycle/refresh notifications; test on phone and head unit separately.
+
+
+## 6M. Root dispatcher call-chain recheck (2026-11-18)
+
+- Re-fetched the exact active and preserved branch versions of `EventDispatcher.java`, `Su.java`, `AccessibilityEventDispatcherService.java`, `ProjectionActivity.java`, `XposedEventDispatcherService.java`, and `MirrorDisplay.java`.
+- Active and backup branch blob SHAs for `EventDispatcher.java` are identical: `bbd7567e216cb0512a66a93973cd6b5208d6ec77`. Active and backup `Su.java` are also identical: `4c3d0993fe0443017441e21bc6dfc898611314c1`. These two files have not diverged between the compared branches.
+- Confirmed in `EventDispatcher.get()`: multi-window dispatch selects Accessibility; otherwise an active Fermata Activity uses the in-app Activity dispatcher; if no active Fermata Activity is available, the Xposed dispatcher is selected. Xposed dispatch falls back to Accessibility for touch/motion events when Xposed cannot dispatch.
+- Confirmed in `AccessibilityDispatcher`: each Back/Home/Tap/Motion path first tries the Accessibility service; only if that path returns false does it ask `SuDispatcher.get()` for a Root fallback.
+- Confirmed `SuDispatcher.instance` is initialized as `completedNull()`. It becomes non-null only when `EventDispatcher.useSu(Su)` is called. The method `useSu(Su)` remains a definition in `EventDispatcher.java`; no invocation has been identified in the AUTO module files reviewed so far.
+- Confirmed `Su.get()` starts an Android `su` process and creates a persistent command writer only when its asynchronous authorization/probe succeeds. This is a rooted-device-specific capability, not a general Android permission or non-root dispatch mechanism.
+- The recursive Git tree for `urgent24jam` was retrieved successfully: tree SHA `c65f8480ad6031402d23d2dc980b9bab4b8b1bdf`, `truncated=false`, 799 tracked blobs and 453 Java files. This is a complete path inventory, but it does not include source contents. GitHub code search still searches the default branch, not this active branch.
+- Therefore, the complete repository-wide source call-site scan is STILL NOT DONE. Do not state that `useSu()` or `Su.get()` has no caller anywhere in the repository. The current confirmed result is limited to the AUTO module files and the explicitly re-fetched Mirror/dispatcher files.
+- No application source, manifest, settings, YouTube/Browser code, or logo assets were changed. No build or device test was run. No APK is verified by this recheck.
+- Next: obtain a complete branch checkout or a branch-aware source-content search to scan all 453 Java files (and any Kotlin/JavaScript callers if relevant). Until then, preserve the current dispatcher and Accessibility behavior; do not add or remove Root initialization or alter Xposed fallback.
