@@ -56,3 +56,10 @@ Log opened: 2026-11-18
 ## Ongoing record
 
 Append each meaningful AUTO TQSM project activity below. Keep commit hashes and CI results exact; distinguish code changes, successful builds, and real-device verification.
+
+
+### 2026-11-18 — Retry cancelled CI job
+
+- Build #51 / run [44226613562](https://github.com/androidautoplayer-mie/Fermata/actions/runs/44226613562) was cancelled during the `Build APKs` step; setup steps succeeded, but APK build did not finish.
+- Retried the cancelled `Build Fermata Auto APKs` job using GitHub Actions job retry. GitHub accepted the retry request.
+- Retry outcome is pending; do not treat it as a successful build until the new attempt completes and APK verification/upload steps succeed.
