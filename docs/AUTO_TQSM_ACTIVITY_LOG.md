@@ -173,3 +173,14 @@ Append each meaningful AUTO TQSM project activity below. Keep commit hashes and 
 - GitHub code search remains scoped to the default branch. Therefore a repository-wide branch-aware content scan of all Java sources is still outstanding. Do not claim there are no Root call sites anywhere in the repository.
 - No application source, manifest, settings, YouTube/Browser code, or logo assets were changed. No build or physical-device test was run; no APK is verified.
 - Next: obtain a complete checkout or branch-aware content search for all 453 Java files (plus other relevant source types). Keep dispatcher, Accessibility, Xposed and existing Root fallback unchanged until that scan is complete.
+
+
+### 2026-11-18 — Full AUTO Java source Root call-site scan (read-only)
+
+- Retrieved all 16 Java files under `fermata/src/auto/java/` from branch `urgent24jam` by exact blob SHA. All 16 fetched successfully; zero fetch errors.
+- Root-related references appeared in only `EventDispatcher.java` and `Su.java`.
+- `EventDispatcher.useSu(Su)` is a definition at lines 29-30. `SuDispatcher.get()` is used at lines 194, 201, 208, 220 and 228 as a fallback after Accessibility dispatch fails. `SuDispatcher.instance` begins as `completedNull()` at line 234. No caller of `useSu()` was found in the 16 AUTO Java files.
+- `Su.get()` is defined at line 28 of `Su.java`; it creates `new Su(...) ` after a successful `su -c ls` probe (line 35). No caller of `Su.get()` was found in the 16 AUTO Java files.
+- Confirmed scoped conclusion: Root fallback code exists, but no activation call site was found within the AUTO Java source directory. Do not generalize this to the entire repository yet.
+- Dispatcher selection and Accessibility-first fallback behavior remain unchanged. No application code, manifest, settings, YouTube/Browser code, or logo assets changed. No build or physical-device test was run; no APK verified.
+- Next: inspect other repository source sets for direct calls, imports, reflection, or integration hooks that could activate `useSu` or `Su.get`. Preserve current behavior until that cross-source inspection is complete.
