@@ -314,11 +314,6 @@ public class MirrorDisplay {
 			}
 		}
 
-		try {
-			app.startService(new Intent(app, XposedEventDispatcherService.class));
-		} catch (Exception err) {
-			Log.e(err, "Failed to start XposedEventDispatcherService");
-		}
 
 		var amgr = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
 		if (amgr != null) AudioManagerCompat.requestAudioFocus(amgr, audioFocusReq);
@@ -345,11 +340,6 @@ public class MirrorDisplay {
 		restoreAccelRotation(app);
 		ProjectionService.stop();
 
-		try {
-			app.stopService(new Intent(app, XposedEventDispatcherService.class));
-		} catch (Exception err) {
-			Log.d(err, "Failed to stop XposedEventDispatcherService");
-		}
 
 		var amgr = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
 		if (amgr != null) AudioManagerCompat.abandonAudioFocusRequest(amgr, audioFocusReq);
