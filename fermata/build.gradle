@@ -80,7 +80,6 @@ android {
 
             dependencies {
                 implementation files('lib/auto/aauto.aar')
-                compileOnly files('lib/auto/xposed-api-82.jar')
             }
         }
     }
