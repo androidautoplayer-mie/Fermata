@@ -24,7 +24,7 @@ abstract class EventDispatcher {
 	static EventDispatcher get() {
 		if (getWindowCount() > 1) return AccessibilityDispatcher.get();
 		var d = ActivityDispatcher.get();
-		return (d.getActiveInstance() == null) ? XposedDispatcher.get() : d;
+		return (d.getActiveInstance() == null) ? AccessibilityDispatcher.get() : d;
 	}
 
 	public abstract boolean back();
@@ -46,51 +46,6 @@ abstract class EventDispatcher {
 		return null;
 	}
 
-	private static final class XposedDispatcher extends EventDispatcher {
-		static final XposedDispatcher instance = new XposedDispatcher();
-
-		@NonNull
-		static XposedDispatcher get() {
-			return instance;
-		}
-
-		@Override
-		public boolean back() {
-			return XposedEventDispatcherService.dispatchBackEvent() ||
-					AccessibilityDispatcher.get().back();
-		}
-
-		@Override
-		public boolean home() {
-			return AccessibilityDispatcher.get().home();
-		}
-
-		@Override
-		public boolean tap(float x, float y) {
-			if (XposedEventDispatcherService.canDispatchEvent()) {
-				var time = uptimeMillis();
-				return motionEvent(time, time, ACTION_DOWN, x, y) &&
-						motionEvent(time, time + 10, ACTION_UP, x, y);
-			} else {
-				return AccessibilityDispatcher.get().tap(x, y);
-			}
-		}
-
-		@Override
-		public boolean motionEvent(MotionEvent e) {
-			return XposedEventDispatcherService.dispatchEvent(e) ||
-					AccessibilityDispatcher.get().motionEvent(e);
-		}
-
-		@Override
-		public boolean motionEvent(long downTime, long eventTime, int action, float x, float y) {
-			if (XposedEventDispatcherService.canDispatchEvent()) {
-				if (XposedEventDispatcherService.dispatchEvent(
-						obtain(downTime, eventTime, action, x, y, 0))) return true;
-			}
-			return AccessibilityDispatcher.get().motionEvent(downTime, eventTime, action, x, y);
-		}
-	}
 
 	private static final class ActivityDispatcher extends EventDispatcher {
 		private static final ActivityDispatcher instance = new ActivityDispatcher();
