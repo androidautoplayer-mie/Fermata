@@ -93,16 +93,29 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create keystore and local.properties
+        env:
+          CI_KEYSTORE: ${{ secrets.CI_KEYSTORE }}
+          CI_ALIAS: ${{ secrets.CI_ALIAS }}
+          CI_KEY_PWD: ${{ secrets.CI_KEY_PWD }}
+          CI_KEYSTORE_PWD: ${{ secrets.CI_KEYSTORE_PWD }}
         run: |
-          [ -z "${{ secrets.CI_KEYSTORE }}" ] && exit 0
-          echo "${{ secrets.CI_KEYSTORE }}" | base64 -d > keystore.jks
+          set -euo pipefail
+          : "${CI_KEYSTORE:?Missing GitHub Actions secret CI_KEYSTORE}"
+          : "${CI_ALIAS:?Missing GitHub Actions secret CI_ALIAS}"
+          : "${CI_KEY_PWD:?Missing GitHub Actions secret CI_KEY_PWD}"
+          : "${CI_KEYSTORE_PWD:?Missing GitHub Actions secret CI_KEYSTORE_PWD}"
+
+          printf '%s' "$CI_KEYSTORE" | base64 --decode > keystore.jks
+          test -s keystore.jks
 
           cat > local.properties <<EOF
           storeFile=$(pwd)/keystore.jks
-          keyAlias=${{ secrets.CI_ALIAS }}
-          keyPassword=${{ secrets.CI_KEY_PWD }}
-          storePassword=${{ secrets.CI_KEYSTORE_PWD }}
+          keyAlias=$CI_ALIAS
+          keyPassword=$CI_KEY_PWD
+          storePassword=$CI_KEYSTORE_PWD
           EOF
+
+          test -f "$(pwd)/keystore.jks"
 
       - name: Build APKs
         env:
