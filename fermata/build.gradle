@@ -60,6 +60,7 @@ android {
     productFlavors {
         mobile {
             dimension "version"
+            applicationIdSuffix '.urgent24jam'
             resValue "string", "app_name", project.getProperties()
                     .getOrDefault('APP_NAME', "@string/app_name_mobile")
             resValue "string", "media_service_name", "@string/media_service_name_mobile"
