@@ -120,6 +120,35 @@ jobs:
           ./gradlew fermata:packageAutoReleaseUniversalApk -PABI=armeabi-v7a "${ARGS[@]}"
           mv $out/*.apk dist/arm/
 
+      - name: Build Mobile release APKs
+        env:
+          NO_GS: true
+        run: |
+          out=fermata/build/outputs/apk_from_bundle/mobileRelease
+          mkdir -p dist/mobile-arm64 dist/mobile-arm
+          ARGS=(--build-cache)
+          [ -z "$APP_NAME" ] || ARGS+=("-PAPP_NAME=$APP_NAME")
+          ./gradlew fermata:packageMobileReleaseUniversalApk -PABI=arm64-v8a "${ARGS[@]}"
+          mv "$out"/*.apk dist/mobile-arm64/
+          ./gradlew fermata:packageMobileReleaseUniversalApk -PABI=armeabi-v7a "${ARGS[@]}"
+          mv "$out"/*.apk dist/mobile-arm/
+
+      - name: Upload Mobile ARM64 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-tqsm-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-mobile-arm64
+          path: dist/mobile-arm64/*.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload Mobile ARM32 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-tqsm-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-mobile-arm
+          path: dist/mobile-arm/*.apk
+          retention-days: 30
+          if-no-files-found: error
+
       - name: Build non-minified diagnostic APK
         env:
           NO_GS: true
