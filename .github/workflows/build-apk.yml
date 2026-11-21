@@ -169,6 +169,25 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
+      - name: Build non-minified Mobile diagnostic APK
+        env:
+          NO_GS: true
+        run: |
+          out=fermata/build/outputs/apk_from_bundle/mobileDebug
+          mkdir -p dist/mobile-diagnostic
+          ARGS=(--build-cache)
+          [ -z "$APP_NAME" ] || ARGS+=("-PAPP_NAME=$APP_NAME")
+          ./gradlew fermata:packageMobileDebugUniversalApk -PABI=arm64-v8a "${ARGS[@]}"
+          mv "$out"/*.apk dist/mobile-diagnostic/
+
+      - name: Upload Mobile diagnostic APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-tqsm-${{ env.APP_VERSION }}${{ env.ARTIFACT_SFX }}-mobile-diagnostic-arm64
+          path: dist/mobile-diagnostic/*.apk
+          retention-days: 30
+          if-no-files-found: error
+
       - name: Verify APK signature and package metadata
         run: |
           apk=$(find dist/arm64 -maxdepth 1 -name '*.apk' -print -quit)
