@@ -321,3 +321,40 @@ This section records the user's explicit implementation order and overrides earl
 ## 9A. Change log — 2026-11-18
 
 - 2026-11-18: User clarified that AA Browser's role is to contribute Android-version compatibility components to AUTO•TQSM. Priority changed from audit-first to component-intake-first; suitability review follows after the source is present in the project.
+
+---
+
+## 10. 2026-11-24 — Recipient-specific APK installation codes (MASTER REQUIREMENT)
+
+**Project:** AUTO•TQSM only. This requirement does not belong to MATAMIERA.
+
+### Agreed behavior
+
+- The same AUTO•TQSM APK file may be distributed to multiple recipients, including by email.
+- Each recipient receives an individually assigned installation/redeem code.
+- A code is bound to its intended recipient and may not be used by another recipient.
+- Each code is redeemable once only, for one device registration.
+- After successful redemption, that code is marked used and cannot be reused.
+- The system records at minimum: recipient identity/reference, code record, usage status, redemption time, and registered device reference.
+- Store only a secure password/code hash, never the raw code in ordinary database records or logs.
+- The player must include a separate **Contact** box showing the owner's contact information. Contact is independent of the installation-code system.
+
+### Security and implementation notes
+
+- Do not embed a shared master password or a list of valid recipient codes inside the APK.
+- One-time use and recipient binding require an authoritative redemption service or equivalent trusted online validation; a purely offline APK cannot reliably prevent the same code being reused on another device.
+- Bind the successful redemption to a stable, privacy-conscious device registration token. Do not claim hardware-level identity or tamper-proof binding unless actually implemented and tested.
+- Do not store raw passwords/codes in logs, analytics, email templates after delivery, or client-side source.
+- Provide a safe owner/admin workflow to issue, revoke, and audit recipient codes before public distribution.
+
+### Status
+
+- **Recorded as an approved project requirement.**
+- **Not implemented or tested yet.**
+- No APK distribution or installation flow should be described as protected by unique one-time codes until the server-side validation, device binding, storage, and replay prevention are implemented and tested.
+
+### Project separation
+
+- This section applies only to **AUTO•TQSM**.
+- Do not back-port this requirement into **MATAMIERA**.
+- Do not introduce unrelated project names or features into this requirement.
