@@ -276,3 +276,14 @@ The current Mirror `ProjectionActivity` explicitly checks overlay permission, Wr
 - Changed this declaration to `android:required="false"` in `fermata/src/auto/AndroidManifest.xml`. This does not remove the Auto services or projection intent filters.
 - Commit: `b2476d490ab1b0447027ee642804ac4f3fb3c2ce`.
 - This is a source-level correction only. Merged-manifest inspection, APK build, phone installation, and Android Auto projection still need verification.
+
+
+## 13. YouTube, Browser and Android Auto path audit
+
+- Added `AUTO-TQSM-V2-AUDIT-03-YOUTUBE-BROWSER-AUTO-PATH.md` (commit `ef02d529a528c37311747f06d0545890e9e8ae69`).
+- Confirmed source path: Auto `CarService` launches `MainCarActivity`, which uses the shared `MainActivityDelegate`; YouTube and Browser are add-ons in the same `web` dynamic feature module.
+- YouTube source uses `YoutubeAddon`, `YoutubeFragment`, and `YoutubeMediaEngine` to bridge WebView playback into the existing media session. Car-screen startup restores the last video paused rather than auto-playing it.
+- Browser uses `WebBrowserAddon` and `WebBrowserFragment`; bookmarks and last URL are stored in preferences.
+- The web module is on-demand with Leanback install-time delivery and fusing enabled. Universal APK inclusion still needs inspection after a successful CI build.
+- No YouTube, Browser, media-session, or UI source code changed in this audit.
+- CI run `45765024302` was in progress at audit time; no final build result recorded yet.
