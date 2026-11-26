@@ -129,3 +129,79 @@ Read-only inspection of the official upstream repository `AndreyPavlenko/Fermata
 - Build success, APK output, phone runtime, and Android Auto runtime.
 
 No application source, manifest, resources, or APK were changed during this inspection.
+
+
+## 8. Additional component research — 2026-11-26
+
+Owner-authorized reference projects:
+- AA Browser: https://github.com/kododake/AABrowser
+- FermataX Auto: https://github.com/chuoinho/FermataX
+
+### FermataX findings
+
+The inspected FermataX README describes it as a GPL-3.0 fork of Fermata Media Player and a car-oriented media hub. Its documented areas include:
+- Dashboard-first Android Auto interface and customizable navigation rail.
+- Adaptive Now Playing / Continue / Recent presentation.
+- Local media, folders, playlists, favorites and playback progress.
+- YouTube and Web media access integrated with the media hub.
+- MediaSession, player controls and voice navigation.
+- A CI pipeline with mobile/auto tests, UI/architecture guards, lint and debug APK generation.
+
+The README advertises Android 9.0+ in its badge, but also explicitly says compatibility depends on Android version, Android Auto version, device manufacturer and current security policies; its installation path may require KingInstaller and may not work on every device. Therefore the badge alone is not proof that every FermataX feature or Android Auto projection works on Android 9–16. Source-level compatibility and device testing remain necessary.
+
+Potentially useful concepts to inspect in source:
+1. Dashboard and navigation-rail architecture.
+2. Adaptive Auto layout and width-aware controls.
+3. Unified media/session state across phone and Auto.
+4. Recent/favorites/playback-progress integration.
+5. CI test separation between mobile and Auto.
+
+Do not import all FermataX features merely because they exist. The V2 scope remains the owner's Fermata Auto concept; unrelated IPTV, Stalker, Xtream, Stremio, podcast, audiobook or other service modules are out of scope unless the owner later requests them.
+
+### AA Browser findings
+
+The inspected official kododake/AABrowser README states Android 15 or later as the current requirement. It documents a WebView-based browser experience for Android Auto with:
+- Automotive-first controls and layout.
+- Tabs and session restoration.
+- Bookmarks / quick-link dashboard.
+- Desktop/mobile mode and display scaling.
+- Fullscreen video / Widevine L3 support.
+- Light and AMOLED-dark presentation.
+
+The README explicitly limits use to passengers or when safely parked. These are candidate UX and browser-feature references, not proof that the implementation can be integrated unchanged into the Fermata codebase.
+
+Compatibility evidence:
+- Current AA Browser README: Android 15+.
+- Its historical v1.3 was reported by its maintainer as Android 10+ at the phone-install level, but the maintainer raised the minimum to Android 15 from v1.5 because of head-unit display failures on older devices.
+- An issue requesting Android 12–14 support was closed as not planned.
+- Therefore do not promise AA Browser's Android Auto display behavior on Android 10–14 by simply lowering minSdk. A separate compatibility design and real device testing are required.
+
+### V2 Android compatibility target — owner-requested, not yet verified
+
+- Phone installation/runtime target: Android 10 through Android 16.
+- Android Auto projection target: phone connected to a compatible Android Auto head unit.
+- These are two separate compatibility checks. An APK installing on Android 10 does not prove that its Android Auto entry, service, browser or media UI will appear/work on that OS.
+- Build strategy should retain the broadest viable phone minSdk, isolate newer-API features behind version checks, and avoid importing a dependency whose minSdk exceeds Android 10 unless it can be safely isolated or replaced.
+- Test matrix must cover Android 10, 11, 12, 13, 14, 15 and 16 for phone installation and core functions; separately record Android Auto app/version, head-unit model, wired/wireless mode, launcher visibility, media browsing, playback and day/night response.
+- Any unsupported combination must be recorded honestly rather than described as compatible.
+
+### Initial component selection
+
+Candidate concepts for detailed source audit:
+- FermataX: Auto dashboard architecture, media session/state integration, navigation rail, adaptive layouts, CI checks and tests.
+- AA Browser: car-screen browser controls, tab/session model, bookmarks/quick links, display scaling, light/dark UI, fullscreen video handling.
+
+No source code has been copied, merged, or modified from either reference project in this research step. Before any code reuse, compare actual source files, dependencies, copyright notices and GPL-3.0 obligations. Prefer selective, attributable implementation over bulk copying.
+
+## 9. Compatibility acceptance criteria
+
+A V2 build is not declared compatible based only on Gradle minSdk or a successful APK build. For each Android version 10–16, verify:
+1. APK installs and launches on phone.
+2. Core phone screens and settings operate without crash.
+3. Android Auto connection is detected and app/service identity appears where supported.
+4. Each supported Auto function opens and responds correctly.
+5. Media session and playback controls behave correctly.
+6. Day/night presentation responds correctly to the supported vehicle/Android Auto signal.
+7. Disconnect/reconnect does not leave the app in a broken state.
+
+Record results per OS version and head unit. No compatibility claim until the relevant test passes.
