@@ -243,3 +243,17 @@ Read-only source inspection identified two release-critical areas:
 The audit also records the dynamic web feature containing the YouTube and Web Browser add-ons, and the need to verify feature delivery/runtime availability separately on phones and through Android Auto.
 
 No application source was changed and no APK was built during this audit. Findings are source-level only; see the audit report for details and priorities.
+
+
+## 13. Accessibility and Xposed functional audit 02 — 2026-11-26
+
+Audit report: `AUTO-TQSM-V2-ACCESSIBILITY-XPOSED-AUDIT-02.md`  
+Commit: `f9c08ad9f0f91636a6a13b7fc9b51085c8d5bcad`
+
+**Finding:** Source tracing distinguishes the normal Android Auto media path (`CarService` → `MainCarActivity`) from the separate Mirror/screen-projection path. The normal CarService implementation inspected does not itself request or call Accessibility or Xposed. The legacy Mirror path uses an EventDispatcher that can route touch/Back/Home through direct activity events, Xposed, Accessibility gestures, or root/SU input.
+
+The current Mirror `ProjectionActivity` explicitly checks overlay permission, Write Settings access, Accessibility enablement, root/SU app-op setup, and MediaProjection consent in sequence. Accessibility and Xposed are therefore not established as core app requirements, but Accessibility is currently coupled to Mirror startup and interaction fallback.
+
+**V2 decision:** Park Accessibility and Xposed as legacy/optional Mirror dependencies. Do not require ordinary users to enable Accessibility or install/activate Xposed for core AUTO•TQSM V2 use. Do not delete their code or manifest declarations yet; isolate the normal media path from Mirror first, then decide whether Mirror is redesigned as an optional feature or removed after owner review.
+
+**Change/build/test status:** Documentation only. No source, manifest, permission, or service declaration changed. No APK build or device test performed. See Audit 02 for file-level evidence, limitations, and recommended separation.
