@@ -220,3 +220,12 @@ Changed only release display-name strings in `fermata/src/main/res/values/string
 Debug labels remain visibly marked as debug builds. No package ID, app icon, Mirror FS/navigation service label, media behavior, browser, YouTube, permissions, or activation code has been changed.
 
 **Build/test status:** not yet built or tested. This is a release-label branding change only; it does not prove the logo assets or runtime Android Auto entries are correct. Next gate: run the existing Gradle build/CI, inspect merged manifests and generated APK labels, then continue with asset mapping and functional source audit.
+
+
+### CI follow-up
+
+**Commit:** `b3c23779665f7f29ad5f52477d7e9e76aa73fa8e`
+
+The existing `.github/workflows/build-apk.yml` sets `APP_NAME` as a Gradle override. Its default previously inserted a branch-specific Fermata Auto name, which would have overridden the new release labels. The fallback now uses the official AUTO•TQSM V2 display name. The workflow still builds both arm64-v8a and armeabi-v7a Auto APK variants.
+
+A push-triggered GitHub Actions build is expected from this commit. Its run result has not yet been retrieved, so build status remains **pending/unverified**. No APK is being declared ready.
