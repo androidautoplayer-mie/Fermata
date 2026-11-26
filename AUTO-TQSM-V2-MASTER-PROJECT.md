@@ -257,3 +257,13 @@ The current Mirror `ProjectionActivity` explicitly checks overlay permission, Wr
 **V2 decision:** Park Accessibility and Xposed as legacy/optional Mirror dependencies. Do not require ordinary users to enable Accessibility or install/activate Xposed for core AUTO•TQSM V2 use. Do not delete their code or manifest declarations yet; isolate the normal media path from Mirror first, then decide whether Mirror is redesigned as an optional feature or removed after owner review.
 
 **Change/build/test status:** Documentation only. No source, manifest, permission, or service declaration changed. No APK build or device test performed. See Audit 02 for file-level evidence, limitations, and recommended separation.
+
+
+## 11. First functional safety change — 2026-11-26
+
+- Updated `fermata/src/main/java/me/aap/fermata/ui/activity/MainActivity.java` on the isolated V2 branch.
+- Disabled the inherited upstream Fermata release check in `checkUpdates()` after its existing temporary-file cleanup logic.
+- Reason: the old endpoint queried `AndreyPavlenko/Fermata/releases/latest` and could offer an upstream Fermata APK to AUTO•TQSM V2 users. V2 must not replace itself with another product's APK.
+- V2 update checks remain intentionally disabled until a V2-owned release channel, matching ABI assets, version policy, and signing/verification flow are implemented.
+- Commit: `86b050f056042264177b07779ca65a51cdb6c8fe`.
+- Build status: not yet verified by CI in this record. Device/runtime behavior: not tested.
