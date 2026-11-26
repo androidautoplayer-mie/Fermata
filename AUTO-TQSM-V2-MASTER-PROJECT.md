@@ -94,3 +94,38 @@ The upstream project is GPL-3.0. Before implementing recipient activation, revie
 **Recorded:** isolated V2 branch and initial master-project record.
 
 **Not yet done:** full upstream audit, code changes, activation service, visual implementation, APK build, device testing, and release.
+
+
+## 10. Initial upstream source inspection — 2026-11-26
+
+Read-only inspection of the official upstream repository `AndreyPavlenko/Fermata`:
+
+- Upstream README describes one Fermata Media Player application with Android Auto and Android TV support, and documents the Gradle build workflow.
+- The upstream repository's `LICENSE` is GNU GPL version 3.
+- Current upstream README/source snapshot identifies app version 2.0.2, version code 268, minimum SDK 28, target SDK 36, compile SDK 36.
+- The root build configuration already supports application identity overrides through `APP_NAME`, `APP_ID`, and `APP_ID_SFX`. This may allow a controlled rebrand without rewriting the core application.
+- The main manifest uses the app label resource and launcher drawable; Android Auto metadata and the media-service small icon are separately declared. Therefore the identity audit must include the phone launcher, Android Auto media-service label/icon, Mirror service labels/icons, and any other user-visible names—not just the app title.
+- Auto-specific manifest includes Fermata's projection/car services and related declarations. Preserve these functions unless a specific, tested reason requires a change.
+- App strings separately define mobile name, Android Auto name, media-service name, Mirror names, and addon labels. A consistent rebrand requires checking all these entry points.
+- Five sampled build/source files in the personal fork's `master` have identical blob SHAs to the corresponding upstream files: main manifest, app build.gradle, version catalog, settings.gradle, and root build.gradle. This confirms those five files match; it is not a full-repository equivalence claim.
+
+### Initial implementation direction (not yet applied)
+
+1. Prefer upstream-supported Gradle identity overrides where sufficient; avoid broad source renaming.
+2. Audit all user-visible strings and launcher/service icon references before making a branding patch.
+3. Keep the original Fermata package namespace internally unless a package-ID change is deliberately designed and tested. Package/application ID strategy affects upgrades, Android Auto recognition, data migration, and signing.
+4. Do not change the existing core media, YouTube, Browser, Mirror, or Android Auto behavior as part of a branding-only change.
+5. The supplied AUTO•TQSM logo artwork must be obtained in its original usable image format and mapped to the required Android icon densities/adaptive icon assets without altering its design.
+6. Build and install a debug variant first; test mobile launch, Android Auto listing, media service identity, day/night behavior, and upgrade/install behavior before preparing a release build.
+
+### Not yet verified
+
+- Complete source-tree equivalence with upstream.
+- Exact commit SHA of the upstream snapshot used for V2.
+- Submodule revisions and third-party licence inventory.
+- Full list of user-visible strings/icons and any hard-coded Fermata branding.
+- Actual day/night response to vehicle lighting on the target head unit.
+- Recipient activation architecture and its GPL-3.0 compatibility.
+- Build success, APK output, phone runtime, and Android Auto runtime.
+
+No application source, manifest, resources, or APK were changed during this inspection.
