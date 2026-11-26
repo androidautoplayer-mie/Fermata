@@ -199,7 +199,9 @@ public class MainActivity extends SplitCompatActivityBase
 			}, 1, MINUTES);
 		}
 
-		String reqUrl = "https://api.github.com/repos/AndreyPavlenko/Fermata/releases/latest";
+		// AUTO•TQSM V2 must never offer an upstream Fermata APK as its own update.
+		// Keep update checks disabled until a V2-owned release channel and signing flow exist.
+		return;
 		HttpConnection.connect(o -> o.url(reqUrl), (resp, err) -> {
 			if (err != null) {
 				Log.e(err, "Failed to check updates");
