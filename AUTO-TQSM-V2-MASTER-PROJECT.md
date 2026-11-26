@@ -267,3 +267,12 @@ The current Mirror `ProjectionActivity` explicitly checks overlay permission, Wr
 - V2 update checks remain intentionally disabled until a V2-owned release channel, matching ABI assets, version policy, and signing/verification flow are implemented.
 - Commit: `86b050f056042264177b07779ca65a51cdb6c8fe`.
 - Build status: not yet verified by CI in this record. Device/runtime behavior: not tested.
+
+
+## 12. Phone-installability manifest correction — 2026-11-26
+
+- Audited the Auto-flavor manifest and found `android.hardware.type.automotive` declared with `android:required="true"`.
+- This feature identifies Android Automotive OS hardware, whereas the AUTO•TQSM Auto-flavor APK is intended to be installed on an Android phone and then projected to an Android Auto head unit. Requiring the Automotive OS hardware feature can filter out ordinary phones and is not appropriate for the phone-projection target.
+- Changed this declaration to `android:required="false"` in `fermata/src/auto/AndroidManifest.xml`. This does not remove the Auto services or projection intent filters.
+- Commit: `b2476d490ab1b0447027ee642804ac4f3fb3c2ce`.
+- This is a source-level correction only. Merged-manifest inspection, APK build, phone installation, and Android Auto projection still need verification.
