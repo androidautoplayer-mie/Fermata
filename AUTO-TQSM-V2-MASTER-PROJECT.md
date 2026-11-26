@@ -229,3 +229,17 @@ Debug labels remain visibly marked as debug builds. No package ID, app icon, Mir
 The existing `.github/workflows/build-apk.yml` sets `APP_NAME` as a Gradle override. Its default previously inserted a branch-specific Fermata Auto name, which would have overridden the new release labels. The fallback now uses the official AUTO•TQSM V2 display name. The workflow still builds both arm64-v8a and armeabi-v7a Auto APK variants.
 
 A push-triggered GitHub Actions build is expected from this commit. Its run result has not yet been retrieved, so build status remains **pending/unverified**. No APK is being declared ready.
+
+
+## 12. Functional source audit 01 — 2026-11-26
+
+Audit report: `AUTO-TQSM-V2-FUNCTIONAL-AUDIT-01.md`  
+Commit: `34034d12ac9619c77f3a8c3933c48bff38729e81`
+
+Read-only source inspection identified two release-critical areas:
+- The current in-app updater points to the upstream Fermata GitHub releases endpoint and can download upstream Fermata APKs. V2 must disable this until its own release channel exists, or deliberately replace it with a V2-controlled and tested update service.
+- Android Auto behavior depends on several existing projection, Mirror, MediaSession, CarAppService, accessibility and Xposed-related declarations. Their roles and setup requirements must be mapped before any manifest or component changes.
+
+The audit also records the dynamic web feature containing the YouTube and Web Browser add-ons, and the need to verify feature delivery/runtime availability separately on phones and through Android Auto.
+
+No application source was changed and no APK was built during this audit. Findings are source-level only; see the audit report for details and priorities.
