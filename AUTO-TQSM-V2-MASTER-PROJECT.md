@@ -205,3 +205,18 @@ A V2 build is not declared compatible based only on Gradle minSdk or a successfu
 7. Disconnect/reconnect does not leave the app in a broken state.
 
 Record results per OS version and head unit. No compatibility claim until the relevant test passes.
+
+
+## 11. First implementation change — 2026-11-26
+
+**Commit:** `a89144a5a2b1f4f3f453eae5ffd092b9831b811e`
+
+Changed only release display-name strings in `fermata/src/main/res/values/strings.xml`:
+- Mobile application label: `•𝙰ᴜᴛᴏ•ᴛϙ𝘴𝙼• (𝘝²)•`
+- Android Auto application label: `•𝙰ᴜᴛᴏ•ᴛϙ𝘴𝙼• (𝘝²)•`
+- Mirror service label: `AUTO•TQSM MIRROR`
+- Media service label: `AUTO•TQSM MEDIA SERVICE`
+
+Debug labels remain visibly marked as debug builds. No package ID, app icon, Mirror FS/navigation service label, media behavior, browser, YouTube, permissions, or activation code has been changed.
+
+**Build/test status:** not yet built or tested. This is a release-label branding change only; it does not prove the logo assets or runtime Android Auto entries are correct. Next gate: run the existing Gradle build/CI, inspect merged manifests and generated APK labels, then continue with asset mapping and functional source audit.
