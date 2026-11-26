@@ -287,3 +287,12 @@ The current Mirror `ProjectionActivity` explicitly checks overlay permission, Wr
 - The web module is on-demand with Leanback install-time delivery and fusing enabled. Universal APK inclusion still needs inspection after a successful CI build.
 - No YouTube, Browser, media-session, or UI source code changed in this audit.
 - CI run `45765024302` was in progress at audit time; no final build result recorded yet.
+
+
+## 14. CI compile failure and corrective change — 2026-11-26
+
+- The first CI attempt after disabling the inherited updater failed in `MainActivity.java`: the updater request body remained after the early return and still referenced the removed `reqUrl` variable.
+- Corrected by replacing the full `checkUpdates()` method body with an explicit disabled-update comment. The old upstream release lookup is no longer reachable or compiled into this method.
+- Corrective commit: `394db23990e813f04569d97638415fdfc98cf85d`.
+- The prior failed run was `45764716291`; its compiler error was `cannot find symbol: variable reqUrl`.
+- A new CI run should be triggered by the corrective push. Build result remains pending until that run completes.
