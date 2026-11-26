@@ -177,81 +177,8 @@ public class MainActivity extends SplitCompatActivityBase
 	}
 
 	public void checkUpdates() {
-		if (!BuildConfig.AUTO) return;
-
-		PreferenceStore ps = FermataApplication.get().getPreferenceStore();
-		Pref<Supplier<String[]>> deletePref = sa("DELETE_ON_STARTUP", new String[0]);
-		String[] delete = ps.getStringArrayPref(deletePref);
-
-		if (delete.length != 0) {
-			App.get().getScheduler().schedule(() -> {
-				for (String f : delete) {
-					//noinspection ResultOfMethodCallIgnored
-					new File(f).delete();
-				}
-
-				synchronized (this) {
-					List<String> l = new ArrayList<>(Arrays.asList(ps.getStringArrayPref(deletePref)));
-					l.removeAll(Arrays.asList(delete));
-					if (l.isEmpty()) ps.removePref(deletePref);
-					else ps.applyStringArrayPref(deletePref, l.toArray(new String[0]));
-				}
-			}, 1, MINUTES);
-		}
-
-		// AUTO•TQSM V2 must never offer an upstream Fermata APK as its own update.
-		// Keep update checks disabled until a V2-owned release channel and signing flow exist.
-		return;
-		HttpConnection.connect(o -> o.url(reqUrl), (resp, err) -> {
-			if (err != null) {
-				Log.e(err, "Failed to check updates");
-				return failed(err);
-			}
-
-			resp.getPayload((p, perr) -> {
-				if (perr != null) {
-					Log.e(perr, "Failed to read response");
-					return completedNull();
-				}
-
-				try {
-					JSONObject json = new JSONObject(TextUtils.toString(p, UTF_8));
-					String tag = json.getString("tag_name");
-					String[] res = new String[2];
-					res[0] = tag;
-					int idx = tag.indexOf('(');
-					if (idx != -1) tag = tag.substring(0, idx);
-
-					if (NaturalOrderComparator.compareNatural(BuildConfig.VERSION_NAME, tag.trim()) < 0) {
-						Log.i("New version is available: ", res[0]);
-						JSONArray assets = json.getJSONArray("assets");
-						String ext = "armeabi".equals(Build.SUPPORTED_ABIS[0]) ? "-arm.apk" : "-arm64.apk";
-
-						for (int i = 0, n = assets.length(); i < n; i++) {
-							JSONObject asset = assets.getJSONObject(i);
-							String name = asset.getString("name");
-							if (name.endsWith(ext)) res[1] = asset.getString("browser_download_url");
-						}
-
-						return (res[1] != null) ? completed(res) : completedNull();
-					} else {
-						Log.i("The latest release version - ", res[0], ". Application is up to date");
-						return completedNull();
-					}
-				} catch (Exception ex) {
-					Log.e(ex, "Failed to parse response");
-					return failed(ex);
-				}
-			}).main().onSuccess(res -> {
-				if (res == null) return;
-				UiUtils.showQuestion(getContext(), getString(R.string.update),
-								getString(R.string.update_question, res[0]),
-								AppCompatResources.getDrawable(getContext(), R.drawable.notification))
-						.onSuccess(r -> update(res[1], ps, deletePref));
-			});
-
-			return completedVoid();
-		});
+		// AUTO•TQSM V2 update checks stay disabled until a V2-owned release channel,
+		// ABI-specific assets, and signing/verification policy are ready.
 	}
 
 	private FutureSupplier<Void> update(String uri, PreferenceStore ps,
