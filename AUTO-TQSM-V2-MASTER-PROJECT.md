@@ -343,3 +343,76 @@ The current Mirror `ProjectionActivity` explicitly checks overlay permission, Wr
 **Artifact retention:** GitHub reported both artifacts as unexpired, with expiry on 2026-12-26. Keep them downloaded if they are needed after that date.
 
 **Next engineering gate:** inspect decoded APK manifest/signature/package metadata, then install the correct ABI build on a phone and run the first-launch smoke test. After phone installation is confirmed, test Android Auto behavior on the actual head unit.
+
+
+## 16. Owner-confirmed three-entry Android Auto requirement — 2026-11-26
+
+This section records the owner's explicit clarification and the next acceptance target. It supersedes any earlier ambiguous interpretation of the desired Android Auto launcher behavior.
+
+### Product architecture — confirmed
+
+- **One installable phone APK only.** The owner does not want three separately installed APKs.
+- That single APK must register and expose **three separately selectable entries** in the phone's Android Auto *Customise Launcher* list. When the phone is connected to the compatible Android Auto head unit, the corresponding three entries must be available there as well.
+- The three required entries, under AUTO•TQSM branding (not Fermata branding), are:
+  1. **•𝙰ᴜᴛᴏ•ᴛϙ𝘴𝙼• (𝘝²)•** — main Auto entry; the main experience contains YouTube and Browser.
+  2. **•𝙰ᴜᴛᴏ•ᴛϙ𝘴𝙼• Mirror** — Mirror entry.
+  3. **•𝙰ᴜᴛᴏ•ᴛϙ𝘴𝙼• Media Services** — media service entry.
+- The owner's supplied phone screenshot showing the three original Fermata entries in *Customise Launcher* is the reference for the required three-entry behavior. The product identity and labels must be AUTO•TQSM, not Fermata.
+- This is a functional acceptance requirement, not a proposal or assumption. Preserve one-APK architecture.
+
+### Owner's real-device observation
+
+After installing the ARM64 V2 APK on the phone:
+- The app installed and launched.
+- YouTube and Browser were visible inside the mobile app.
+- In the phone's *Customise Launcher* list, the owner observed only **AUTO•TQSM MEDIA SERVICE** among the three expected AUTO entries.
+- The owner correctly identified this as a failure against the required three-entry acceptance target. Android Auto head-unit appearance/function has not yet been confirmed.
+
+### Source-level evidence inspected in this session
+
+Branch: `auto-tqsm-v2-clean-start`
+
+- `fermata/src/auto/AndroidManifest.xml` declares:
+  - `me.aap.fermata.auto.CarService`, with MAIN and `CATEGORY_PROJECTION` / `CATEGORY_PROJECTION_OEM` intent categories.
+  - `me.aap.fermata.auto.MirrorService`, with MAIN and the same projection categories.
+  - `me.aap.fermata.auto.LauncherActivity` as an exported activity.
+- `fermata/src/main/AndroidManifest.xml` declares:
+  - `me.aap.fermata.media.service.FermataMediaService` as exported and enabled, with the `android.media.browse.MediaBrowserService` intent action.
+- Release string resources currently contain:
+  - app/mobile and auto app label: `•𝙰ᴜᴛᴏ•ᴛϙ𝘴𝙼• (𝘝²)•`
+  - Mirror label: `AUTO•TQSM MIRROR`
+  - media label: `AUTO•TQSM MEDIA SERVICE`
+- The existing source therefore contains declarations for the three relevant service paths, but this alone does **not** prove that all three are merged into the installed APK, recognized by Android Auto, or shown in the launcher.
+- The owner specifically highlighted `LauncherActivity` and `CarService` as likely areas to inspect based on practical experience. Treat this as a strong debugging lead, but verify the actual component-discovery behavior before changing code.
+
+### Next engineering task — not yet implemented
+
+1. Inspect the **actual merged/decoded manifest inside the exact ARM64 APK installed by the owner**, not only source manifests.
+2. Confirm final package/application ID, exported/enabled state, component class names, intent actions/categories, labels and icons for the Auto, Mirror and Media entries.
+3. Compare those declarations with the upstream/reference behavior that produces the owner's three-entry screenshot. Identify the precise registration mechanism for the three entries.
+4. Trace `CarService`, `LauncherActivity`, `MirrorService`, media service, manifest-merger configuration, product flavors and build packaging. Check whether a component is excluded, renamed, filtered, disabled, or not recognized by the phone's Android Auto launcher.
+5. Make the smallest evidence-based code/manifest correction on the isolated V2 branch. Do not make speculative changes to `LauncherActivity` or `CarService`.
+6. Run CI for ARM64 and ARM32, inspect the resulting APK manifests, and provide a new test build.
+7. Ask the owner to verify that all three branded entries appear in phone *Customise Launcher*, then verify availability and operation on the actual Android Auto head unit.
+
+### Acceptance criteria
+
+- One APK installed on the phone.
+- Three separately selectable AUTO•TQSM entries appear in phone *Customise Launcher*:
+  - AUTO•TQSM (V²) main entry
+  - AUTO•TQSM Mirror
+  - AUTO•TQSM Media Services
+- All three are available in Android Auto when connected to a compatible head unit.
+- Main Auto entry exposes the intended YouTube and Browser experience.
+- Mirror and Media Services entries perform their respective functions.
+- No Fermata user-facing branding remains in these three entries.
+- Preserve the official V2 logo and matte identity; do not change artwork or colors without owner instruction.
+
+### Status at pause
+
+- **Confirmed:** one APK / three separate launcher entries is the owner's required architecture and acceptance target.
+- **Observed failure:** the tested ARM64 installation showed only the Media Services entry in phone *Customise Launcher*, while YouTube and Browser were available inside the phone app.
+- **Source inspection:** source manifests contain CarService, MirrorService and FermataMediaService declarations.
+- **Not yet known:** why only Media Services is discovered; whether the relevant Auto/Mirror components are present and correctly declared in the installed APK; whether the head unit lists any of the entries.
+- **No corrective source change has been made for this three-entry issue yet.** Do not claim the issue fixed until a corrected APK passes the phone launcher test and the head-unit test.
+- Resume from this section. Keep this project isolated; do not mix MATAMIERA or ARAD into V2.
